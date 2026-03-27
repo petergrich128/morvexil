@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morvexil — Onboarding</title>
+<style>
+body{margin:0;font-family:Inter,system-ui;background:#0b0f14;color:#fff}
+.container{max-width:900px;margin:auto;padding:40px 20px}
+h1{font-size:36px;margin-bottom:10px}
+.sub{color:#888;margin-bottom:30px}
+.card{background:#111;border:1px solid #222;border-radius:20px;padding:24px;margin-bottom:20px}
+.label{font-weight:700;margin-bottom:8px}
+.desc{font-size:14px;color:#aaa;margin-bottom:10px}
+input{width:100%;padding:14px;border-radius:12px;border:1px solid #333;background:#0f141a;color:#fff}
+button{margin-top:20px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(180deg,#f0d29a,#d9b26c);color:#111;font-weight:700;cursor:pointer}
+</style>
+<script>
+function save(){
+  const objective = document.getElementById("objective").value.trim();
+  const product = document.getElementById("product").value.trim();
+  const distribution = document.getElementById("distribution").value.trim();
+  const sales = document.getElementById("sales").value.trim();
+
+  localStorage.setItem("morvexil_state", JSON.stringify({
+    objective: objective,
+    pillars: ["Product","Distribution","Sales"],
+    pillarDetails: { product, distribution, sales }
+  }));
+
+  window.location.href = "dashboard.html";
+}
+</script>
+</head>
+<body>
+<div style="position:fixed; top:20px; left:20px; z-index:999;">
+  <a href="index.html" style="color:#aaa;text-decoration:none;font-size:14px;transition:0.2s;font-family: Inter, sans-serif;"
+     onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">← Back to Morvexil</a>
+</div>
+<div class="container">
+<h1>Define your 90-day cycle</h1>
+<div class="sub">This system is structured. You don’t create the framework — you operate inside it.</div>
+
+<div class="card">
+  <div class="label">Objective</div>
+  <div class="desc">What must be true at the end of 90 days?</div>
+  <input maxlength="40" id="objective" placeholder="Example: Launch a paid offer and get first 20 clients">
+</div>
+
+<div class="card">
+  <div class="label">Product</div>
+  <div class="desc">What are you building in this cycle?</div>
+  <input maxlength="40" id="product" placeholder="Example: Core offer, landing page, and delivery system">
+</div>
+
+<div class="card">
+  <div class="label">Distribution</div>
+  <div class="desc">How will people consistently see your work?</div>
+  <input maxlength="40" id="distribution" placeholder="Example: Weekly content, outbound reach, and lead capture">
+</div>
+
+<div class="card">
+  <div class="label">Sales</div>
+  <div class="desc">How will you convert attention into revenue?</div>
+  <input maxlength="50" id="sales" placeholder="Example: Discovery calls, follow-up, and conversion flow">
+</div>
+
+<button onclick="save()">Begin execution</button>
+</div>
+</body>
+</html>

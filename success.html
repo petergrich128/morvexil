@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morvexil — Access Confirmed</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:rgba(14,20,30,.82);
+      --line:rgba(255,255,255,.08);
+      --text:#f5f7fb;
+      --muted:#aeb7c4;
+      --gold:#d9b26c;
+      --gold2:#f0d29a;
+      --shadow:0 24px 70px rgba(0,0,0,.42);
+      --radius:26px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      min-height:100vh;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(77,110,146,.18), transparent 25%),
+        radial-gradient(circle at 80% 0%, rgba(217,178,108,.12), transparent 20%),
+        linear-gradient(180deg, #0a0f15 0%, #0e1620 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .card{
+      width:min(100%, 860px);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)),
+        rgba(11,16,23,.76);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:34px;
+    }
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--gold2);
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      margin-bottom:18px;
+    }
+    .eyebrow::before{
+      content:"";
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:linear-gradient(180deg,var(--gold2),var(--gold));
+    }
+    h1{
+      margin:0 0 14px;
+      font-size:clamp(42px, 6vw, 66px);
+      line-height:.96;
+      letter-spacing:-.05em;
+      max-width:680px;
+    }
+    p{
+      margin:0 0 18px;
+      color:#dbe4ef;
+      font-size:18px;
+      line-height:1.55;
+      max-width:720px;
+    }
+    .panel{
+      margin-top:24px;
+      border:1px solid var(--line);
+      border-radius:22px;
+      background:rgba(255,255,255,.03);
+      padding:22px;
+    }
+    .steps{
+      display:grid;
+      gap:14px;
+      margin-top:16px;
+    }
+    .step{
+      display:grid;
+      grid-template-columns:34px 1fr;
+      gap:14px;
+      align-items:start;
+      padding:14px 0;
+      border-top:1px solid rgba(255,255,255,.06);
+    }
+    .step:first-child{border-top:0;padding-top:0}
+    .num{
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      color:#111;
+      background:linear-gradient(180deg,var(--gold2),var(--gold));
+    }
+    .step h3{
+      margin:2px 0 6px;
+      font-size:18px;
+      line-height:1.2;
+    }
+    .step p{
+      margin:0;
+      font-size:15px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:26px;
+    }
+    .btn{
+      min-height:50px;
+      padding:0 20px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      text-decoration:none;
+      border:1px solid var(--line);
+    }
+    .btn.primary{
+      background:linear-gradient(180deg,var(--gold2),var(--gold));
+      color:#111;
+      box-shadow:0 14px 34px rgba(217,178,108,.22);
+      border:0;
+    }
+    .btn.secondary{
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+    }
+    .note{
+      margin-top:20px;
+      font-size:14px;
+      color:var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="eyebrow">Morvexil Access Confirmed</div>
+    <h1>Your 90-day cycle is ready.</h1>
+    <p>Your payment was successful. Morvexil is not another productivity app. It is a controlled execution system built to help you finish one meaningful objective in the next 90 days.</p>
+
+    <section class="panel">
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <div>
+            <h3>Open onboarding</h3>
+            <p>Define one objective, then set the three pillars around it: Product, Distribution, and Sales.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <div>
+            <h3>Build your cycle</h3>
+            <p>Keep it simple. One objective only. Short answers create a stronger system.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <div>
+            <h3>Start execution</h3>
+            <p>Move into the dashboard, add your weekly priorities, and start the cycle.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="btn primary" href="onboarding.html">Start onboarding</a>
+        <a class="btn secondary" href="index.html">Back to Morvexil</a>
+      </div>
+
+      <div class="note">Important: bookmark your Morvexil site so you can return to your cycle any time.</div>
+    </section>
+  </main>
+</body>
+</html>

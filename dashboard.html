@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Morvexil — Dashboard</title>
+<style>
+:root{--line:rgba(255,255,255,.08);--lineStrong:rgba(255,255,255,.12);--text:#f5f7fb;--muted:#aeb7c4;--gold:#d9b26c;--gold2:#f0d29a;--shadow:0 24px 70px rgba(0,0,0,.42);--radius:26px}
+*{box-sizing:border-box} html,body{margin:0;padding:0}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 20% 0%,rgba(77,110,146,.18),transparent 25%),radial-gradient(circle at 80% 0%,rgba(217,178,108,.12),transparent 20%),linear-gradient(180deg,#0a0f15 0%,#0e1620 100%);min-height:100vh}
+a{color:inherit;text-decoration:none}.shell{width:min(100% - 32px,1320px);margin:0 auto;padding:26px 0 56px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.02em}
+.mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.02)),radial-gradient(circle at 30% 30%,rgba(240,210,154,.95),rgba(217,178,108,.22) 45%,transparent 62%),linear-gradient(180deg,#263748,#121923);border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.35)}
+.brand-name{font-size:30px;text-shadow:0 0 12px rgba(255,255,255,.12);letter-spacing:-.02em}.top-actions{display:flex;gap:10px;flex-wrap:wrap}
+.ghost-btn,.gold-btn,.danger-btn{min-height:46px;padding:0 18px;border-radius:999px;font-weight:700;border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font:inherit}
+.ghost-btn{background:rgba(255,255,255,.04);color:var(--text);border:1px solid var(--line)}
+.gold-btn{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#111;box-shadow:0 14px 34px rgba(217,178,108,.22)}
+.danger-btn{background:rgba(255,255,255,.03);color:#fff;border:1px solid rgba(255,255,255,.12)}
+.panel{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02)),rgba(11,16,23,.70);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(12px)}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--gold2);font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:linear-gradient(180deg,var(--gold2),var(--gold))}
+.hero{padding:28px;display:grid;grid-template-columns:1.35fr .9fr;gap:20px;margin-bottom:22px;overflow:hidden;position:relative}
+.hero h1{margin:16px 0 12px;font-size:clamp(52px,7vw,82px);line-height:.94;letter-spacing:-.055em;max-width:700px;text-wrap:balance}
+.hero-copy{font-size:18px;color:#dbe4ef;max-width:760px;line-height:1.5;margin-bottom:24px}
+.lock-row{display:flex;flex-wrap:wrap;gap:12px}.lock-badge{min-height:44px;padding:0 18px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;background:rgba(217,178,108,.08);border:1px solid rgba(217,178,108,.20);color:#f3ddb2;font-size:12px;letter-spacing:.10em;text-transform:uppercase;font-weight:700}
+.lock-dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(180deg,var(--gold2),var(--gold))}
+.lock-card{margin-top:18px;padding:18px 20px;border-radius:22px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.identity-note{color:var(--gold2);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;font-weight:800}
+.lock-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;font-weight:800}
+.lock-pill{padding:8px 12px;border-radius:999px;background:rgba(217,178,108,.10);border:1px solid rgba(217,178,108,.20);color:#f3ddb2;font-size:12px;font-weight:800;letter-spacing:.10em;text-transform:uppercase}
+.lock-copy{color:#dbe4ef;font-size:15px;line-height:1.55}
+.progress-card{height:100%;padding:24px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015)),rgba(12,18,26,.72);border:1px solid var(--lineStrong);border-radius:24px}
+.progress-title{font-size:14px;text-transform:uppercase;letter-spacing:.14em;color:var(--gold2);margin-bottom:14px;font-weight:800}
+.progress-core{display:flex;align-items:center;gap:22px;margin-bottom:18px}
+.ring{width:142px;height:142px;border-radius:50%;background:conic-gradient(var(--gold) 0deg,rgba(255,255,255,.08) 0deg);display:grid;place-items:center;position:relative;flex:0 0 auto}
+.ring::before{content:"";position:absolute;inset:14px;border-radius:50%;background:linear-gradient(180deg,rgba(8,12,18,.95),rgba(11,16,23,.98));border:1px solid rgba(255,255,255,.07)}
+.ring-center{position:relative;z-index:1;text-align:center}.ring-day{font-size:42px;font-weight:800;line-height:1;margin-bottom:6px}.ring-sub{font-size:14px;color:var(--muted);line-height:1.2}.progress-copy{color:#e8eef8;font-size:17px;line-height:1.55;max-width:320px}
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:22px}
+.pillar-card{padding:24px;min-height:265px;display:flex;flex-direction:column}.pillar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.pillar-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:var(--gold2);background:rgba(217,178,108,.10);border:1px solid rgba(217,178,108,.18)}
+.pillar-name{font-size:24px;font-weight:800;line-height:1.05;letter-spacing:-.02em;margin:0 0 14px}.pillar-framework{color:#dbe4ef;font-size:16px;line-height:1.55;margin-bottom:16px}
+.pillar-detail{padding:12px 14px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:#f5f7fb;font-size:14px;line-height:1.4;margin-top:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.pillar-foot{margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);color:var(--muted);font-size:14px;font-weight:600}
+.bottom-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.card{padding:24px}.card h2{margin:0 0 8px;font-size:26px;line-height:1.05;letter-spacing:-.02em}.sub{color:var(--muted);font-size:16px;line-height:1.45;margin-bottom:18px}
+.field{margin-top:16px} label{display:block;margin-bottom:10px;font-size:14px;color:#e6edf7;font-weight:700}
+input,textarea{width:100%;min-height:58px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--text);padding:16px 18px;outline:none;font:inherit;font-size:14px}
+textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placeholder{font-size:13px;opacity:.6;color:#8f9db0}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.task-list{display:grid;gap:10px;margin-top:18px}
+.task{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:start;padding:14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.check{width:22px;height:22px;border-radius:50%;border:1px solid rgba(217,178,108,.28);background:rgba(217,178,108,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;margin-top:2px}
+.task.done .check{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#111}.task.done .task-text{text-decoration:line-through;color:#7e8a99}
+.task-text{font-size:15px;line-height:1.45}.task-delete{border:0;background:transparent;color:#9aa6b7;cursor:pointer;font-size:20px;line-height:1}
+.empty{padding:16px;border-radius:16px;background:rgba(255,255,255,.03);border:1px dashed var(--line);color:var(--muted)}
+.momentum-score{font-size:54px;font-weight:900;line-height:1;letter-spacing:-.04em;margin:10px 0 18px}.momentum-bar{height:14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.06);overflow:hidden;margin-bottom:18px}
+.momentum-bar>div{height:100%;width:0%;background:linear-gradient(90deg,var(--gold2),var(--gold))}
+.reflection-box{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}.small{font-size:14px;color:var(--muted)}
+.log-list{display:grid;gap:10px;margin-top:16px}.log-item{padding:14px 16px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.10)}
+.log-date{font-size:11px;color:var(--gold2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:800}.log-text{font-size:15px;color:#eef4fb;line-height:1.55}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <div class="brand"><div class="mark"></div><div class="brand-name">Morvexil</div></div>
+    <div class="top-actions">
+      <a class="ghost-btn" href="index.html">Back to Morvexil</a>
+      <button class="ghost-btn" onclick="resetTasks()">Clear tasks</button>
+      <button class="danger-btn" onclick="resetCycle()">Redefine cycle</button>
+    </div>
+  </div>
+
+  <section class="panel hero">
+    <div class="hero-left">
+      <div class="eyebrow">Morvexil System</div>
+      <h1 id="hero-objective">Stay inside the objective</h1>
+      <div class="hero-copy">One objective. Fixed structure. Controlled execution. Morvexil removes drift so the right work gets finished.</div>
+      <div class="lock-row">
+        <div class="lock-badge"><span class="lock-dot"></span> Objective locked</div>
+        <div class="lock-badge"><span class="lock-dot"></span> Structure locked</div>
+        <div class="lock-badge"><span class="lock-dot"></span> Capacity locked</div>
+      </div>
+      <div class="lock-card">
+        <div class="identity-note">System logic</div>
+        <div class="lock-head"><span>Morvexil protocol</span><span class="lock-pill">90-day commitment</span></div>
+        <div class="lock-copy">The structure is fixed on purpose. Do not renegotiate the objective when friction appears. Protect the cycle, finish the priorities, and let execution speak.</div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="progress-card">
+        <div class="progress-title">Cycle progress</div>
+        <div class="progress-core">
+          <div class="ring" id="progress-ring"><div class="ring-center"><div class="ring-day" id="ring-day">1</div><div class="ring-sub">Day of 90</div></div></div>
+          <div>
+            <div class="progress-copy" id="progress-copy">Protect the structure. Finish this week’s priorities before expanding scope.</div>
+            <div class="small" id="progress-weekly" style="margin-top:12px;">Weekly progress: 0 / 3</div>
+            <div class="small" id="progress-status" style="margin-top:6px;">Status: Cycle active</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pillars-grid">
+    <article class="panel pillar-card">
+      <div class="pillar-top"><div class="pillar-num">1</div></div>
+      <div class="pillar-name">Product</div>
+      <div class="pillar-framework">Build the core asset that makes this objective real.</div>
+      <div class="pillar-detail" id="product-detail">Define what you are building.</div>
+      <div class="pillar-foot">Locked to the current 90-day cycle</div>
+    </article>
+    <article class="panel pillar-card">
+      <div class="pillar-top"><div class="pillar-num">2</div></div>
+      <div class="pillar-name">Distribution</div>
+      <div class="pillar-framework">Create consistent reach so the right people repeatedly see the work.</div>
+      <div class="pillar-detail" id="distribution-detail">Define how people will see your work.</div>
+      <div class="pillar-foot">Locked to the current 90-day cycle</div>
+    </article>
+    <article class="panel pillar-card">
+      <div class="pillar-top"><div class="pillar-num">3</div></div>
+      <div class="pillar-name">Sales</div>
+      <div class="pillar-framework">Convert attention into revenue through direct asks, offers, and follow-up.</div>
+      <div class="pillar-detail" id="sales-detail">Define how you convert attention into revenue.</div>
+      <div class="pillar-foot">Locked to the current 90-day cycle</div>
+    </article>
+  </section>
+
+  <section class="bottom-grid">
+    <div class="panel card">
+      <h2>Weekly execution</h2>
+      <div class="sub">Define up to 3 priorities for the current week. This is the execution container. Do not add more.</div>
+      <div class="field">
+        <label for="task-input">Add next priority</label>
+        <input id="task-input" type="text" placeholder="One priority for this week" />
+      </div>
+      <div class="actions"><button class="gold-btn" onclick="addTask()">Add priority</button></div>
+      <div class="small" id="task-cap-note">Weekly limit: 3 priorities.</div>
+      <div class="task-list" id="task-list"></div>
+    </div>
+
+    <div class="panel card">
+      <h2>Execution score</h2>
+      <div class="sub">Weekly score is earned through completed priorities.</div>
+      <div class="momentum-score" id="momentum-score">0 / 3</div>
+      <div class="momentum-bar"><div id="momentum-fill"></div></div>
+      <div class="small" id="momentum-text">No priorities completed yet. Start with one concrete move.</div>
+      <div class="small" id="score-breakdown" style="margin-top:8px;">Completed: 0 / 3 priorities</div>
+      <div class="reflection-box">
+        <label for="reflection">Execution log</label>
+        <textarea id="reflection" placeholder="Record only what materially moved the objective forward."></textarea>
+        <div class="actions"><button class="gold-btn" onclick="saveReflection()">Save reflection</button></div>
+        <div class="small" id="reflection-status">Nothing saved yet.</div>
+        <div class="log-list" id="daily-log-list"><div class="empty">No execution recorded yet.</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const DASHBOARD_VERSION="1.0";
+const stateKey="morvexil_state";
+const tasksKey="morvexil_tasks";
+const reflectionKey="morvexil_reflection";
+const reflectionLogKey="morvexil_reflection_log";
+const cycleStartKey="morvexil_cycle_start";
+const cycleLockedKey="morvexil_cycle_locked";
+
+function cleanInput(text,max){return String(text||"").replace(/[<>]/g,"").replace(/\s+/g," ").trim().slice(0,max);}
+function safeArray(value){return Array.isArray(value)?value:[];}
+function safeObject(value){return value&&typeof value==="object"&&!Array.isArray(value)?value:{};}
+function saveState(state){
+  const current=safeObject(state), details=safeObject(current.pillarDetails);
+  const safeState={version:DASHBOARD_VERSION,objective:cleanInput(current.objective,50),pillars:["Product","Distribution","Sales"],pillarDetails:{product:cleanInput(details.product,40),distribution:cleanInput(details.distribution,40),sales:cleanInput(details.sales,40)}};
+  localStorage.setItem(stateKey,JSON.stringify(safeState));
+  return safeState;
+}
+function renderText(id,text){const el=document.getElementById(id); if(el) el.textContent=text||"";}
+function loadState(){try{const raw=localStorage.getItem(stateKey); if(!raw) return saveState({}); return saveState(JSON.parse(raw));}catch(e){return saveState({});}}
+function loadTasks(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem(tasksKey)||"[]");
+    return safeArray(parsed).slice(0,3).map(task=>({text:cleanInput(safeObject(task).text,60),done:!!safeObject(task).done})).filter(task=>task.text.length>0);
+  }catch(e){return [];}
+}
+function saveTasks(tasks){
+  const safeTasks=safeArray(tasks).slice(0,3).map(task=>({text:cleanInput(safeObject(task).text,60),done:!!safeObject(task).done})).filter(task=>task.text.length>0);
+  localStorage.setItem(tasksKey,JSON.stringify(safeTasks));
+}
+function loadReflectionLog(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem(reflectionLogKey)||"{}"), obj=safeObject(parsed), safeLog={};
+    Object.keys(obj).sort().slice(-30).forEach(key=>{const cleaned=cleanInput(obj[key],160); if(cleaned) safeLog[key]=cleaned;});
+    return safeLog;
+  }catch(e){return {};}
+}
+function saveReflectionLog(log){
+  const obj=safeObject(log), safeLog={};
+  Object.keys(obj).sort().slice(-30).forEach(key=>{const cleaned=cleanInput(obj[key],160); if(cleaned) safeLog[key]=cleaned;});
+  localStorage.setItem(reflectionLogKey,JSON.stringify(safeLog));
+}
+function getTodayKey(){const now=new Date(); return now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");}
+function formatEntryDate(key){const p=String(key).split("-"); return p.length===3 ? p[2]+"."+p[1]+"."+p[0] : key;}
+function ensureCycleStart(){let stored=localStorage.getItem(cycleStartKey); if(!stored){stored=new Date().toISOString(); localStorage.setItem(cycleStartKey,stored);} return new Date(stored);}
+function ensureCycleLocked(){if(!localStorage.getItem(cycleLockedKey)){localStorage.setItem(cycleLockedKey,"true");}}
+
+function renderHero(state){
+  const objective=cleanInput(safeObject(state).objective,50);
+  renderText("hero-objective", objective || "Stay inside the objective");
+}
+function renderPillarDetails(state){
+  const details=safeObject(safeObject(state).pillarDetails);
+  renderText("product-detail", cleanInput(details.product,40) || "Define what you are building.");
+  renderText("distribution-detail", cleanInput(details.distribution,40) || "Define how people will see your work.");
+  renderText("sales-detail", cleanInput(details.sales,40) || "Define how you convert attention into revenue.");
+}
+function renderProgress(){
+  const startDate=ensureCycleStart(), now=new Date(), ms=24*60*60*1000;
+  const day=Math.min(90,Math.max(1,Math.floor((now-startDate)/ms)+1));
+  const degrees=(day/90)*360;
+  renderText("ring-day", String(day));
+  document.getElementById("progress-ring").style.background=`conic-gradient(var(--gold) ${degrees}deg, rgba(255,255,255,.08) ${degrees}deg)`;
+  const done=loadTasks().filter(t=>t.done).length;
+  renderText("progress-weekly","Weekly progress: "+Math.min(3,done)+" / 3");
+  renderText("progress-status","Status: Cycle active");
+}
+function renderMomentum(){
+  const done=loadTasks().filter(t=>t.done).length, total=Math.min(3,done);
+  renderText("momentum-score", total+" / 3");
+  document.getElementById("momentum-fill").style.width=(total/3)*100+"%";
+  let text="No priorities completed yet. Start with one concrete move.";
+  if(total===1) text="Good. First priority completed.";
+  if(total===2) text="Strong progress. One more to close the week.";
+  if(total===3) text="All priorities completed. Week executed.";
+  renderText("momentum-text", text);
+  renderText("score-breakdown", "Completed: "+done+" / 3 priorities");
+}
+function escapeHtml(str){return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");}
+function renderTasks(){
+  const tasks=loadTasks(), wrap=document.getElementById("task-list");
+  wrap.innerHTML="";
+  document.getElementById("task-cap-note").textContent="Weekly limit: 3 priorities.";
+  if(!tasks.length){
+    wrap.innerHTML='<div class="empty">No priorities yet. Add the first concrete move.</div>';
+    renderMomentum(); renderProgress(); return;
+  }
+  tasks.forEach((task,idx)=>{
+    const row=document.createElement("div");
+    row.className="task"+(task.done?" done":"");
+    row.innerHTML=`<div class="check" onclick="toggleTask(${idx})">${task.done?"✓":""}</div><div class="task-text">${escapeHtml(task.text)}</div><button class="task-delete" onclick="deleteTask(${idx})">×</button>`;
+    wrap.appendChild(row);
+  });
+  renderMomentum(); renderProgress();
+}
+function addTask(){
+  const input=document.getElementById("task-input");
+  if(!input) return;
+  const text=cleanInput(input.value,60);
+  if(!text) return;
+  const tasks=loadTasks();
+  if(tasks.length>=3){renderText("task-cap-note","Weekly limit: 3 priorities."); return;}
+  tasks.push({text,done:false}); saveTasks(tasks); input.value=""; renderTasks();
+}
+function toggleTask(index){const tasks=loadTasks(); if(!tasks[index]) return; tasks[index].done=!tasks[index].done; saveTasks(tasks); renderTasks();}
+function deleteTask(index){const tasks=loadTasks(); tasks.splice(index,1); saveTasks(tasks); renderTasks();}
+function resetTasks(){localStorage.removeItem(tasksKey); renderTasks(); renderText("task-cap-note","Weekly limit: 3 priorities.");}
+function saveReflection(){
+  const field=document.getElementById("reflection");
+  if(!field) return;
+  const text=cleanInput(field.value,160), today=getTodayKey();
+  if(text.length>0){localStorage.setItem(reflectionKey,text); const log=loadReflectionLog(); log[today]=text; saveReflectionLog(log);}
+  else{localStorage.removeItem(reflectionKey); const log=loadReflectionLog(); delete log[today]; saveReflectionLog(log);}
+  field.value=text;
+  renderText("reflection-status", text.length>0?"Saved to execution log.":"Nothing saved yet.");
+  renderDailyLog();
+}
+function loadReflection(){
+  const text=cleanInput(localStorage.getItem(reflectionKey)||"",160);
+  const field=document.getElementById("reflection");
+  if(field) field.value=text;
+  renderText("reflection-status", text.length>0?"Saved to execution log.":"Nothing saved yet.");
+  renderDailyLog();
+}
+function renderDailyLog(){
+  const wrap=document.getElementById("daily-log-list"), log=loadReflectionLog();
+  const entries=Object.entries(log).filter(([_,v])=>String(v||"").trim().length>0).sort((a,b)=>a[0]<b[0]?1:-1).slice(0,5);
+  if(!entries.length){wrap.innerHTML='<div class="empty">No execution recorded yet.</div>'; return;}
+  wrap.innerHTML=entries.map(([date,text])=>`<div class="log-item"><div class="log-date">${formatEntryDate(date)}</div><div class="log-text">${escapeHtml(String(text))}</div></div>`).join("");
+}
+function resetCycle(){
+  const confirmed=window.confirm("Redefine this 90-day cycle? This will clear the current objective, structure, weekly priorities, and execution log. Continue only if you want to start a new cycle.");
+  if(!confirmed) return;
+  localStorage.removeItem(stateKey);
+  localStorage.removeItem(tasksKey);
+  localStorage.removeItem(reflectionKey);
+  localStorage.removeItem(reflectionLogKey);
+  localStorage.removeItem(cycleStartKey);
+  localStorage.removeItem(cycleLockedKey);
+  window.location.href="onboarding.html";
+}
+ensureCycleLocked();
+const state=loadState();
+renderHero(state);
+renderPillarDetails(state);
+renderProgress();
+renderTasks();
+loadReflection();
+</script>
+</body>
+</html>

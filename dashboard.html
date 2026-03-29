@@ -170,6 +170,9 @@ const reflectionKey="morvexil_reflection";
 const reflectionLogKey="morvexil_reflection_log";
 const cycleStartKey="morvexil_cycle_start";
 const cycleLockedKey="morvexil_cycle_locked";
+let currentSession=null;
+let dbTasks=[];
+let dbReflectionLog={};
 
 function cleanInput(text,max){return String(text||"").replace(/[<>]/g,"").replace(/\s+/g," ").trim().slice(0,max);}
 function safeArray(value){return Array.isArray(value)?value:[];}
@@ -233,26 +236,64 @@ async function logoutMorvexil(){
   window.location.href = "auth.html";
 }
 function loadTasks(){
-  try{
-    const parsed=JSON.parse(localStorage.getItem(tasksKey)||"[]");
-    return safeArray(parsed).slice(0,3).map(task=>({text:cleanInput(safeObject(task).text,60),done:!!safeObject(task).done})).filter(task=>task.text.length>0);
-  }catch(e){return [];}
+  return safeArray(dbTasks).slice(0,3).map(task=>({
+    id:safeObject(task).id||null,
+    text:cleanInput(safeObject(task).text,60),
+    done:!!safeObject(task).done
+  })).filter(task=>task.text.length>0);
 }
 function saveTasks(tasks){
-  const safeTasks=safeArray(tasks).slice(0,3).map(task=>({text:cleanInput(safeObject(task).text,60),done:!!safeObject(task).done})).filter(task=>task.text.length>0);
-  localStorage.setItem(tasksKey,JSON.stringify(safeTasks));
+  const safeTasks=safeArray(tasks).slice(0,3).map(task=>({
+    id:safeObject(task).id||null,
+    text:cleanInput(safeObject(task).text,60),
+    done:!!safeObject(task).done
+  })).filter(task=>task.text.length>0);
+  dbTasks=safeTasks;
+  localStorage.setItem(tasksKey,JSON.stringify(safeTasks.map(({text,done})=>({text,done}))));
 }
 function loadReflectionLog(){
-  try{
-    const parsed=JSON.parse(localStorage.getItem(reflectionLogKey)||"{}"), obj=safeObject(parsed), safeLog={};
-    Object.keys(obj).sort().slice(-30).forEach(key=>{const cleaned=cleanInput(obj[key],160); if(cleaned) safeLog[key]=cleaned;});
-    return safeLog;
-  }catch(e){return {};}
+  return safeObject(dbReflectionLog);
 }
 function saveReflectionLog(log){
   const obj=safeObject(log), safeLog={};
-  Object.keys(obj).sort().slice(-30).forEach(key=>{const cleaned=cleanInput(obj[key],160); if(cleaned) safeLog[key]=cleaned;});
+  Object.keys(obj).sort().slice(-30).forEach(key=>{
+    const cleaned=cleanInput(obj[key],160);
+    if(cleaned) safeLog[key]=cleaned;
+  });
+  dbReflectionLog=safeLog;
   localStorage.setItem(reflectionLogKey,JSON.stringify(safeLog));
+}
+async function loadDashboardCoreFromDatabase(userId){
+  const { data: priorities } = await supabaseClient
+    .from("weekly_priorities")
+    .select("id, text, done, position")
+    .eq("user_id", userId)
+    .order("position", { ascending: true });
+
+  dbTasks = safeArray(priorities).slice(0,3).map(row=>({
+    id: row.id,
+    text: cleanInput(row.text,60),
+    done: !!row.done
+  }));
+  localStorage.setItem(tasksKey, JSON.stringify(dbTasks.map(({text,done})=>({text,done}))));
+
+  const today = getTodayKey();
+  const { data: logs } = await supabaseClient
+    .from("daily_logs")
+    .select("id, entry_date, text")
+    .eq("user_id", userId)
+    .order("entry_date", { ascending: false })
+    .limit(30);
+
+  const safeLog={};
+  safeArray(logs).forEach(row=>{
+    const key=String(row.entry_date||"");
+    const cleaned=cleanInput(row.text,160);
+    if(key && cleaned) safeLog[key]=cleaned;
+  });
+  dbReflectionLog=safeLog;
+  localStorage.setItem(reflectionLogKey, JSON.stringify(safeLog));
+  localStorage.setItem(reflectionKey, safeLog[today] || "");
 }
 function getTodayKey(){const now=new Date(); return now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");}
 function formatEntryDate(key){const p=String(key).split("-"); return p.length===3 ? p[2]+"."+p[1]+"."+p[0] : key;}
@@ -307,24 +348,138 @@ function renderTasks(){
   });
   renderMomentum(); renderProgress();
 }
-function addTask(){
+async function addTask(){
   const input=document.getElementById("task-input");
-  if(!input) return;
+  if(!input || !currentSession) return;
   const text=cleanInput(input.value,60);
   if(!text) return;
   const tasks=loadTasks();
   if(tasks.length>=3){renderText("task-cap-note","Weekly limit: 3 priorities."); return;}
-  tasks.push({text,done:false}); saveTasks(tasks); input.value=""; renderTasks();
+
+  const { data, error } = await supabaseClient
+    .from("weekly_priorities")
+    .insert({
+      user_id: currentSession.user.id,
+      text: text,
+      done: false,
+      position: tasks.length
+    })
+    .select("id, text, done, position")
+    .single();
+
+  if(error){
+    alert("Could not save the priority. Please try again.");
+    return;
+  }
+
+  dbTasks.push({id:data.id, text:data.text, done:!!data.done});
+  saveTasks(dbTasks);
+  input.value="";
+  renderTasks();
 }
-function toggleTask(index){const tasks=loadTasks(); if(!tasks[index]) return; tasks[index].done=!tasks[index].done; saveTasks(tasks); renderTasks();}
-function deleteTask(index){const tasks=loadTasks(); tasks.splice(index,1); saveTasks(tasks); renderTasks();}
-function resetTasks(){localStorage.removeItem(tasksKey); renderTasks(); renderText("task-cap-note","Weekly limit: 3 priorities.");}
-function saveReflection(){
+async function toggleTask(index){
+  if(!currentSession) return;
+  const tasks=loadTasks();
+  if(!tasks[index]) return;
+  const task=tasks[index];
+  const nextDone=!task.done;
+
+  const { error } = await supabaseClient
+    .from("weekly_priorities")
+    .update({ done: nextDone })
+    .eq("id", task.id)
+    .eq("user_id", currentSession.user.id);
+
+  if(error){
+    alert("Could not update the priority. Please try again.");
+    return;
+  }
+
+  tasks[index].done=nextDone;
+  saveTasks(tasks);
+  renderTasks();
+}
+async function deleteTask(index){
+  if(!currentSession) return;
+  const tasks=loadTasks();
+  const task=tasks[index];
+  if(!task) return;
+
+  const { error } = await supabaseClient
+    .from("weekly_priorities")
+    .delete()
+    .eq("id", task.id)
+    .eq("user_id", currentSession.user.id);
+
+  if(error){
+    alert("Could not delete the priority. Please try again.");
+    return;
+  }
+
+  tasks.splice(index,1);
+  dbTasks = tasks.map((t, i)=>({id:t.id||null,text:t.text,done:t.done}));
+  saveTasks(dbTasks);
+
+  for(let i=0;i<dbTasks.length;i++){
+    if(!dbTasks[i].id) continue;
+    await supabaseClient.from("weekly_priorities").update({ position: i }).eq("id", dbTasks[i].id).eq("user_id", currentSession.user.id);
+  }
+  renderTasks();
+}
+async function resetTasks(){
+  if(!currentSession) return;
+  const { error } = await supabaseClient
+    .from("weekly_priorities")
+    .delete()
+    .eq("user_id", currentSession.user.id);
+
+  if(error){
+    alert("Could not clear priorities. Please try again.");
+    return;
+  }
+
+  dbTasks=[];
+  localStorage.removeItem(tasksKey);
+  renderTasks();
+  renderText("task-cap-note","Weekly limit: 3 priorities.");
+}
+async function saveReflection(){
   const field=document.getElementById("reflection");
-  if(!field) return;
+  if(!field || !currentSession) return;
   const text=cleanInput(field.value,160), today=getTodayKey();
-  if(text.length>0){localStorage.setItem(reflectionKey,text); const log=loadReflectionLog(); log[today]=text; saveReflectionLog(log);}
-  else{localStorage.removeItem(reflectionKey); const log=loadReflectionLog(); delete log[today]; saveReflectionLog(log);}
+
+  if(text.length>0){
+    const { error } = await supabaseClient
+      .from("daily_logs")
+      .upsert({
+        user_id: currentSession.user.id,
+        entry_date: today,
+        text: text,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "user_id,entry_date" });
+
+    if(error){
+      alert("Could not save the reflection. Please try again.");
+      return;
+    }
+
+    localStorage.setItem(reflectionKey,text);
+    const log=loadReflectionLog();
+    log[today]=text;
+    saveReflectionLog(log);
+  } else {
+    await supabaseClient
+      .from("daily_logs")
+      .delete()
+      .eq("user_id", currentSession.user.id)
+      .eq("entry_date", today);
+
+    localStorage.removeItem(reflectionKey);
+    const log=loadReflectionLog();
+    delete log[today];
+    saveReflectionLog(log);
+  }
+
   field.value=text;
   renderText("reflection-status", text.length>0?"Saved to execution log.":"Nothing saved yet.");
   renderDailyLog();
@@ -357,9 +512,12 @@ function resetCycle(){
   ensureCycleLocked();
   const session = await requireMorvexilAuth();
   if(!session) return;
+  currentSession = session;
 
   const syncedState = await syncCycleFromDatabase(session.user.id);
   const state = syncedState || loadState();
+
+  await loadDashboardCoreFromDatabase(session.user.id);
 
   renderHero(state);
   renderPillarDetails(state);

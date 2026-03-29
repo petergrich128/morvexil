@@ -200,7 +200,20 @@ async function requireMorvexilAuth(){
     window.location.href = "auth.html";
     return null;
   }
-  return data.session;
+
+  const session = data.session;
+  const { data: profileData, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("paid")
+    .eq("id", session.user.id)
+    .single();
+
+  if(profileError || !profileData || !profileData.paid){
+    window.location.href = "index.html";
+    return null;
+  }
+
+  return session;
 }
 
 async function syncCycleFromDatabase(userId){

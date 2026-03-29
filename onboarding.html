@@ -31,7 +31,20 @@ async function requireMorvexilAuth() {
     window.location.href = "auth.html";
     return null;
   }
-  return data.session;
+
+  const session = data.session;
+  const { data: profileData, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("paid")
+    .eq("id", session.user.id)
+    .single();
+
+  if (profileError || !profileData || !profileData.paid) {
+    window.location.href = "index.html";
+    return null;
+  }
+
+  return session;
 }
 
 async function save() {
@@ -77,11 +90,16 @@ async function save() {
 
   const { data, error } = await supabaseClient
     .from("cycles")
-    .select("objective, product_pillar, distribution_pillar, sales_pillar")
+    .select("objective, product_pillar, distribution_pillar, sales_pillar, onboarding_completed")
     .eq("user_id", session.user.id)
     .maybeSingle();
 
   if (!error && data) {
+    if (data.onboarding_completed) {
+      window.location.href = "dashboard.html";
+      return;
+    }
+
     document.getElementById("objective").value = data.objective || "";
     document.getElementById("product").value = data.product_pillar || "";
     document.getElementById("distribution").value = data.distribution_pillar || "";

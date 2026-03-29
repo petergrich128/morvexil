@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morvexil — Access</title>
+  <meta name="description" content="Login or create your Morvexil account." />
+  <style>
+    :root{
+      --bg:#0b0f14;--bg2:#101720;--panel:rgba(17,25,36,.72);--text:#f5f7fb;--muted:#aeb7c4;
+      --line:rgba(255,255,255,.10);--gold:#d9b26c;--gold2:#f0d29a;--shadow:0 20px 60px rgba(0,0,0,.42);
+      --radius:22px;--max:1120px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;color:var(--text);line-height:1.5;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(102,134,173,.18), transparent 30%),
+        radial-gradient(circle at 80% 0%, rgba(217,178,108,.12), transparent 28%),
+        linear-gradient(180deg, #0a0f15 0%, #0f1620 55%, #0a0f15 100%);
+      min-height:100vh;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{width:min(calc(100% - 32px), var(--max));margin:0 auto}
+    .site-header{
+      position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);
+      background:linear-gradient(180deg, rgba(9,12,17,.86), rgba(9,12,17,.55));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .nav{min-height:88px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:inline-flex;align-items:center;gap:12px;font-weight:700}
+    .brand-mark{
+      width:40px;height:40px;border-radius:12px;
+      background:
+        linear-gradient(160deg, rgba(255,255,255,.12), rgba(255,255,255,.02)),
+        radial-gradient(circle at 30% 30%, rgba(240,210,154,.95), rgba(217,178,108,.22) 45%, transparent 62%),
+        linear-gradient(180deg, #263748, #121923);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 10px 30px rgba(0,0,0,.35);
+    }
+    .brand-name{font-size:30px;font-weight:800;letter-spacing:1.2px;color:#fff;text-shadow:0 0 14px rgba(255,255,255,.18)}
+    .nav-links{display:flex;align-items:center;gap:12px;color:var(--muted)}
+    .nav-links a{
+      font-size:14px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03)
+    }
+    .hero{padding:56px 0 80px}
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:28px;align-items:start}
+    .intro,.panel{
+      border:1px solid var(--line);background:var(--panel);border-radius:28px;
+      box-shadow:var(--shadow);backdrop-filter:blur(14px);
+    }
+    .intro{padding:34px}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+      color:var(--gold2);padding:10px 14px;border:1px solid rgba(255,255,255,.08);border-radius:999px;
+      background:rgba(255,255,255,.035);backdrop-filter:blur(10px);margin-bottom:18px;
+    }
+    .eyebrow::before{
+      content:"";width:8px;height:8px;border-radius:50%;
+      background:linear-gradient(180deg,var(--gold2),var(--gold));box-shadow:0 0 18px rgba(240,210,154,.6);
+    }
+    h1{margin:0 0 16px;font-size:clamp(42px, 7vw, 72px);line-height:.95;letter-spacing:-.05em;max-width:700px}
+    .lead{margin:0 0 22px;font-size:18px;color:#d8e0ea;max-width:620px}
+    .list{display:grid;gap:14px;margin-top:24px}
+    .item{
+      display:grid;grid-template-columns:38px 1fr;gap:14px;align-items:start;
+      padding:14px 0;border-top:1px solid rgba(255,255,255,.06);
+    }
+    .item:first-child{border-top:0;padding-top:0}
+    .num{
+      width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-weight:800;color:#111;background:linear-gradient(180deg,var(--gold2),var(--gold));
+    }
+    .item strong{display:block;font-size:18px;margin:2px 0 6px}
+    .item span{color:var(--muted);font-size:15px}
+    .panel{padding:26px}
+    .tab-row{
+      display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;
+      background:rgba(255,255,255,.03);padding:8px;border-radius:18px;border:1px solid var(--line);
+    }
+    .tab{
+      border:0;border-radius:14px;padding:13px 14px;font-weight:800;font-size:15px;cursor:pointer;
+      background:transparent;color:var(--muted);
+    }
+    .tab.active{
+      color:#111;background:linear-gradient(180deg,var(--gold2),var(--gold));
+      box-shadow:0 10px 24px rgba(217,178,108,.18);
+    }
+    .form{display:none}
+    .form.active{display:block}
+    label{
+      display:block;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+      color:var(--gold2);margin:14px 0 8px;
+    }
+    input{
+      width:100%;height:56px;border-radius:18px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03);color:var(--text);padding:0 16px;font-size:16px;outline:none;
+    }
+    input:focus{border-color:rgba(240,210,154,.55);box-shadow:0 0 0 3px rgba(240,210,154,.08)}
+    .hint{margin:10px 0 0;color:var(--muted);font-size:13px}
+    .actions{display:grid;gap:12px;margin-top:18px}
+    .btn{
+      width:100%;min-height:56px;border-radius:999px;border:0;cursor:pointer;
+      font-size:16px;font-weight:800;
+    }
+    .btn-primary{
+      background:linear-gradient(180deg,var(--gold2),var(--gold));color:#111;
+      box-shadow:0 14px 34px rgba(217,178,108,.22);
+    }
+    .btn-secondary{background:rgba(255,255,255,.04);color:var(--text);border:1px solid var(--line)}
+    .message{display:none;margin-top:16px;padding:14px 16px;border-radius:16px;border:1px solid var(--line);font-size:14px}
+    .message.show{display:block}
+    .message.error{color:#ffd5d5;background:rgba(255,125,125,.08);border-color:rgba(255,125,125,.24)}
+    .message.success{color:#d6ffe0;background:rgba(142,226,160,.08);border-color:rgba(142,226,160,.22)}
+    .message.info{color:#e8eef6;background:rgba(255,255,255,.04)}
+    .footer-note{margin-top:18px;color:var(--muted);font-size:13px}
+    @media (max-width: 920px){
+      .grid{grid-template-columns:1fr}
+      .hero{padding-top:28px}
+      .intro,.panel{padding:22px}
+      .brand-name{font-size:26px}
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="index.html" aria-label="Morvexil home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Morvexil</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html">Back to site</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="hero">
+    <div class="container grid">
+      <section class="intro">
+        <div class="eyebrow">Secure Morvexil Access</div>
+        <h1>Login or create your account.</h1>
+        <p class="lead">This is the secure entry point for Morvexil. Your account will hold your cycle, your pillars, your weekly priorities, and your daily execution log.</p>
+
+        <div class="list">
+          <div class="item">
+            <div class="num">1</div>
+            <div>
+              <strong>Create your account</strong>
+              <span>Use the same email you will use for payment and product access.</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="num">2</div>
+            <div>
+              <strong>Confirm your email</strong>
+              <span>Supabase can send a confirmation email depending on auth settings.</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="num">3</div>
+            <div>
+              <strong>Enter Morvexil</strong>
+              <span>After login, you will be sent to onboarding first, then to the dashboard.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="tab-row">
+          <button id="loginTab" class="tab active" type="button">Login</button>
+          <button id="signupTab" class="tab" type="button">Create account</button>
+        </div>
+
+        <form id="loginForm" class="form active">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email" required />
+
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" placeholder="Your password" autocomplete="current-password" required />
+
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">Login</button>
+            <button id="resetPasswordBtn" class="btn btn-secondary" type="button">Send password reset email</button>
+          </div>
+
+          <p class="hint">After login, Morvexil sends you to onboarding.</p>
+        </form>
+
+        <form id="signupForm" class="form">
+          <label for="signupEmail">Email</label>
+          <input id="signupEmail" type="email" placeholder="you@example.com" autocomplete="email" required />
+
+          <label for="signupPassword">Password</label>
+          <input id="signupPassword" type="password" placeholder="Create a strong password" autocomplete="new-password" required />
+
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">Create account</button>
+          </div>
+
+          <p class="hint">Use the same email you will use for payment. After signup, you can log in immediately or after email confirmation if enabled.</p>
+        </form>
+
+        <div id="message" class="message info"></div>
+
+        <p class="footer-note">Next secure step: onboarding and dashboard will be protected behind this account layer.</p>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://gdjbwryoihbticuliwol.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkamJ3cnlvaWhidGljdWxpd29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NTA1MDMsImV4cCI6MjA5MDMyNjUwM30.21iafDk567oQSX7abwuU4lYZIvdsnQWpnZifK5ODmPU";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const loginTab = document.getElementById("loginTab");
+    const signupTab = document.getElementById("signupTab");
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const messageEl = document.getElementById("message");
+
+    function setMode(mode){
+      const loginActive = mode === "login";
+      loginTab.classList.toggle("active", loginActive);
+      signupTab.classList.toggle("active", !loginActive);
+      loginForm.classList.toggle("active", loginActive);
+      signupForm.classList.toggle("active", !loginActive);
+      clearMessage();
+    }
+
+    function showMessage(text, type = "info"){
+      messageEl.textContent = text;
+      messageEl.className = "message show " + type;
+    }
+
+    function clearMessage(){
+      messageEl.textContent = "";
+      messageEl.className = "message info";
+    }
+
+    loginTab.addEventListener("click", () => setMode("login"));
+    signupTab.addEventListener("click", () => setMode("signup"));
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearMessage();
+
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+
+      showMessage("Logging you in...", "info");
+
+      const { error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        showMessage(error.message, "error");
+        return;
+      }
+
+      showMessage("Login successful. Redirecting to onboarding...", "success");
+      setTimeout(() => {
+        window.location.href = "onboarding.html";
+      }, 700);
+    });
+
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearMessage();
+
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value;
+
+      showMessage("Creating your account...", "info");
+
+      const { error } = await supabaseClient.auth.signUp({
+        email,
+        password
+      });
+
+      if (error) {
+        showMessage(error.message, "error");
+        return;
+      }
+
+      showMessage("Account created. Check your email if confirmation is enabled, then log in.", "success");
+      setMode("login");
+      document.getElementById("loginEmail").value = email;
+    });
+
+    document.getElementById("resetPasswordBtn").addEventListener("click", async () => {
+      clearMessage();
+
+      const email = document.getElementById("loginEmail").value.trim();
+      if (!email) {
+        showMessage("Enter your email first, then click reset.", "error");
+        return;
+      }
+
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/auth.html"
+      });
+
+      if (error) {
+        showMessage(error.message, "error");
+        return;
+      }
+
+      showMessage("Password reset email sent.", "success");
+    });
+
+    (async function checkSession(){
+      const { data } = await supabaseClient.auth.getSession();
+      if (data && data.session) {
+        showMessage("You are already logged in. Redirecting...", "success");
+        setTimeout(() => {
+          window.location.href = "onboarding.html";
+        }, 500);
+      }
+    })();
+  </script>
+</body>
+</html>

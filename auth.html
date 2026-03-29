@@ -228,6 +228,14 @@
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) return "auth.html";
 
+      const { data: profileData, error: profileError } = await supabaseClient
+        .from("profiles")
+        .select("paid")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+      if (profileError || !profileData || profileData.paid !== true) return "index.html";
+
       const { data, error } = await supabaseClient
         .from("cycles")
         .select("onboarding_completed")
@@ -281,6 +289,14 @@
       }
 
       const nextUrl = await resolveDestination();
+      if (nextUrl === "index.html") {
+        showMessage("This account is not unlocked yet. Complete payment first.", "error");
+        setTimeout(() => {
+          window.location.href = nextUrl;
+        }, 900);
+        return;
+      }
+
       showMessage("Login successful. Redirecting...", "success");
       setTimeout(() => {
         window.location.href = nextUrl;
@@ -336,6 +352,12 @@
       const { data } = await supabaseClient.auth.getSession();
       if (data && data.session) {
         const nextUrl = await resolveDestination();
+
+        if (nextUrl === "index.html") {
+          showMessage("You are logged in, but this account is not unlocked yet.", "error");
+          return;
+        }
+
         showMessage("You are already logged in. Redirecting...", "success");
         setTimeout(() => {
           window.location.href = nextUrl;

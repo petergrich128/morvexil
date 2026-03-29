@@ -15,27 +15,85 @@ h1{font-size:36px;margin-bottom:10px}
 input{width:100%;padding:14px;border-radius:12px;border:1px solid #333;background:#0f141a;color:#fff}
 button{margin-top:20px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(180deg,#f0d29a,#d9b26c);color:#111;font-weight:700;cursor:pointer}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-function save(){
-  const objective = document.getElementById("objective").value.trim();
-  const product = document.getElementById("product").value.trim();
-  const distribution = document.getElementById("distribution").value.trim();
-  const sales = document.getElementById("sales").value.trim();
+const SUPABASE_URL = "https://gdjbwryoihbticuliwol.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkamJ3cnlvaWhidGljdWxpd29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NTA1MDMsImV4cCI6MjA5MDMyNjUwM30.21iafDk567oQSX7abwuU4lYZIvdsnQWpnZifK5ODmPU";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  localStorage.setItem("morvexil_state", JSON.stringify({
+function cleanInput(text, max) {
+  return String(text || "").replace(/[<>]/g, "").replace(/\s+/g, " ").trim().slice(0, max);
+}
+
+async function requireMorvexilAuth() {
+  const { data } = await supabaseClient.auth.getSession();
+  if (!data || !data.session) {
+    window.location.href = "auth.html";
+    return null;
+  }
+  return data.session;
+}
+
+async function save() {
+  const session = await requireMorvexilAuth();
+  if (!session) return;
+
+  const objective = cleanInput(document.getElementById("objective").value, 50);
+  const product = cleanInput(document.getElementById("product").value, 40);
+  const distribution = cleanInput(document.getElementById("distribution").value, 40);
+  const sales = cleanInput(document.getElementById("sales").value, 40);
+
+  const payload = {
     objective: objective,
     pillars: ["Product","Distribution","Sales"],
     pillarDetails: { product, distribution, sales }
-  }));
+  };
+
+  localStorage.setItem("morvexil_state", JSON.stringify(payload));
+
+  const { error } = await supabaseClient
+    .from("cycles")
+    .upsert({
+      user_id: session.user.id,
+      objective: objective,
+      product_pillar: product,
+      distribution_pillar: distribution,
+      sales_pillar: sales,
+      onboarding_completed: true,
+      updated_at: new Date().toISOString()
+    }, { onConflict: "user_id" });
+
+  if (error) {
+    alert("Could not save your cycle. Please try again.");
+    return;
+  }
 
   window.location.href = "dashboard.html";
 }
+
+(async function initOnboarding() {
+  const session = await requireMorvexilAuth();
+  if (!session) return;
+
+  const { data, error } = await supabaseClient
+    .from("cycles")
+    .select("objective, product_pillar, distribution_pillar, sales_pillar")
+    .eq("user_id", session.user.id)
+    .maybeSingle();
+
+  if (!error && data) {
+    document.getElementById("objective").value = data.objective || "";
+    document.getElementById("product").value = data.product_pillar || "";
+    document.getElementById("distribution").value = data.distribution_pillar || "";
+    document.getElementById("sales").value = data.sales_pillar || "";
+  }
+})();
 </script>
 </head>
 <body>
 <div style="position:fixed; top:20px; left:20px; z-index:999;">
   <a href="index.html" style="color:#aaa;text-decoration:none;font-size:14px;transition:0.2s;font-family: Inter, sans-serif;"
-     onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">← Back to Morvexil</a>
+     onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">← Back to Morvexil</a> <a href="auth.html" style="margin-left:16px;color:#aaa;text-decoration:none;font-size:14px;transition:0.2s;font-family: Inter, sans-serif;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">Login</a>
 </div>
 <div class="container">
 <h1>Define your 90-day cycle</h1>
@@ -44,25 +102,25 @@ function save(){
 <div class="card">
   <div class="label">Objective</div>
   <div class="desc">What must be true at the end of 90 days?</div>
-  <input maxlength="40" id="objective" placeholder="Example: Launch a paid offer and get first 20 clients">
+  <input id="objective" placeholder="Example: Launch a paid offer and get first 20 clients">
 </div>
 
 <div class="card">
   <div class="label">Product</div>
   <div class="desc">What are you building in this cycle?</div>
-  <input maxlength="40" id="product" placeholder="Example: Core offer, landing page, and delivery system">
+  <input id="product" placeholder="Example: Core offer, landing page, and delivery system">
 </div>
 
 <div class="card">
   <div class="label">Distribution</div>
   <div class="desc">How will people consistently see your work?</div>
-  <input maxlength="40" id="distribution" placeholder="Example: Weekly content, outbound reach, and lead capture">
+  <input id="distribution" placeholder="Example: Weekly content, outbound reach, and lead capture">
 </div>
 
 <div class="card">
   <div class="label">Sales</div>
   <div class="desc">How will you convert attention into revenue?</div>
-  <input maxlength="50" id="sales" placeholder="Example: Discovery calls, follow-up, and conversion flow">
+  <input id="sales" placeholder="Example: Discovery calls, follow-up, and conversion flow">
 </div>
 
 <button onclick="save()">Begin execution</button>

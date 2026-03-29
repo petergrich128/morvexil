@@ -63,6 +63,8 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
     <div class="brand"><div class="mark"></div><div class="brand-name">Morvexil</div></div>
     <div class="top-actions">
       <a class="ghost-btn" href="index.html">Back to Morvexil</a>
+        <a class="ghost-btn" href="auth.html">Login</a>
+        <button class="ghost-btn" onclick="logoutMorvexil()">Logout</button>
       <button class="ghost-btn" onclick="resetTasks()">Clear tasks</button>
       <button class="danger-btn" onclick="resetCycle()">Redefine cycle</button>
     </div>
@@ -154,6 +156,12 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
   </section>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://gdjbwryoihbticuliwol.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkamJ3cnlvaWhidGljdWxpd29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NTA1MDMsImV4cCI6MjA5MDMyNjUwM30.21iafDk567oQSX7abwuU4lYZIvdsnQWpnZifK5ODmPU";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
 <script>
 const DASHBOARD_VERSION="1.0";
 const stateKey="morvexil_state";
@@ -173,7 +181,57 @@ function saveState(state){
   return safeState;
 }
 function renderText(id,text){const el=document.getElementById(id); if(el) el.textContent=text||"";}
-function loadState(){try{const raw=localStorage.getItem(stateKey); if(!raw) return saveState({}); return saveState(JSON.parse(raw));}catch(e){return saveState({});}}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(stateKey);
+    if(!raw) return saveState({});
+    return saveState(JSON.parse(raw));
+  }catch(e){
+    return saveState({});
+  }
+}
+
+async function requireMorvexilAuth(){
+  const { data } = await supabaseClient.auth.getSession();
+  if(!data || !data.session){
+    window.location.href = "auth.html";
+    return null;
+  }
+  return data.session;
+}
+
+async function syncCycleFromDatabase(userId){
+  const { data, error } = await supabaseClient
+    .from("cycles")
+    .select("objective, product_pillar, distribution_pillar, sales_pillar, onboarding_completed")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if(error || !data){
+    return false;
+  }
+
+  if(!data.onboarding_completed){
+    window.location.href = "onboarding.html";
+    return false;
+  }
+
+  const nextState = saveState({
+    objective: data.objective || "",
+    pillars: ["Product","Distribution","Sales"],
+    pillarDetails: {
+      product: data.product_pillar || "",
+      distribution: data.distribution_pillar || "",
+      sales: data.sales_pillar || ""
+    }
+  });
+  return nextState;
+}
+
+async function logoutMorvexil(){
+  await supabaseClient.auth.signOut();
+  window.location.href = "auth.html";
+}
 function loadTasks(){
   try{
     const parsed=JSON.parse(localStorage.getItem(tasksKey)||"[]");
@@ -295,13 +353,20 @@ function resetCycle(){
   localStorage.removeItem(cycleLockedKey);
   window.location.href="onboarding.html";
 }
-ensureCycleLocked();
-const state=loadState();
-renderHero(state);
-renderPillarDetails(state);
-renderProgress();
-renderTasks();
-loadReflection();
+(async function initDashboard(){
+  ensureCycleLocked();
+  const session = await requireMorvexilAuth();
+  if(!session) return;
+
+  const syncedState = await syncCycleFromDatabase(session.user.id);
+  const state = syncedState || loadState();
+
+  renderHero(state);
+  renderPillarDetails(state);
+  renderProgress();
+  renderTasks();
+  loadReflection();
+})();
 </script>
 </body>
 </html>

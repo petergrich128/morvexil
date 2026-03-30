@@ -4,919 +4,541 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Morvexil — Dashboard</title>
-<meta name="description" content="Morvexil execution dashboard." />
 <style>
-  :root{
-    --bg:#0b0f14;
-    --bg2:#101720;
-    --panel:rgba(14,20,30,.78);
-    --panelSoft:rgba(255,255,255,.035);
-    --line:rgba(255,255,255,.08);
-    --lineStrong:rgba(255,255,255,.12);
-    --text:#f5f7fb;
-    --muted:#aeb7c4;
-    --gold:#d9b26c;
-    --gold2:#f0d29a;
-    --shadow:0 24px 70px rgba(0,0,0,.42);
-    --radius:26px;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
-  body{
-    font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-    color:var(--text);
-    background:
-      radial-gradient(circle at 20% 0%, rgba(77,110,146,.18), transparent 25%),
-      radial-gradient(circle at 80% 0%, rgba(217,178,108,.12), transparent 20%),
-      linear-gradient(180deg, #0a0f15 0%, #0e1620 100%);
-    min-height:100vh;
-  }
-  a{color:inherit;text-decoration:none}
-  .shell{
-    width:min(100% - 32px, 1320px);
-    margin:0 auto;
-    padding:26px 0 56px;
-  }
-  .topbar{
-    display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px;
-  }
-  .brand{
-    display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.02em;
-  }
-  .mark{
-    width:38px;height:38px;border-radius:12px;
-    background:
-      linear-gradient(160deg, rgba(255,255,255,.12), rgba(255,255,255,.02)),
-      radial-gradient(circle at 30% 30%, rgba(240,210,154,.95), rgba(217,178,108,.22) 45%, transparent 62%),
-      linear-gradient(180deg, #263748, #121923);
-    border:1px solid rgba(255,255,255,.12);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 10px 30px rgba(0,0,0,.35);
-  }
-  .brand-name{font-size:30px;text-shadow:0 0 12px rgba(255,255,255,.12)}
-  .top-actions{display:flex;gap:10px;flex-wrap:wrap}
-  .ghost-btn,.gold-btn,.danger-btn{
-    min-height:46px;padding:0 18px;border-radius:999px;font-weight:700;border:0;cursor:pointer;
-    display:inline-flex;align-items:center;justify-content:center;font:inherit;
-    transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-  }
-  .ghost-btn{
-    background:rgba(255,255,255,.04);color:var(--text);border:1px solid var(--line);
-  }
-  .gold-btn{
-    background:linear-gradient(180deg,var(--gold2),var(--gold));color:#111;
-    box-shadow:0 14px 34px rgba(217,178,108,.22);
-  }
-  .danger-btn{
-    background:rgba(255,255,255,.03);color:#fff;border:1px solid rgba(255,255,255,.12);
-  }
-  .ghost-btn:hover,.gold-btn:hover,.danger-btn:hover{transform:translateY(-1px)}
-  .panel{
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)),
-      rgba(11,16,23,.70);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    backdrop-filter: blur(12px);
-  }
-  .eyebrow{
-    display:inline-flex;align-items:center;gap:10px;
-    padding:10px 14px;border-radius:999px;border:1px solid var(--line);
-    background:rgba(255,255,255,.03);color:var(--gold2);font-size:12px;
-    letter-spacing:.18em;text-transform:uppercase;
-  }
-  .eyebrow::before{
-    content:"";width:8px;height:8px;border-radius:50%;
-    background:linear-gradient(180deg,var(--gold2),var(--gold));
-    box-shadow:0 0 18px rgba(240,210,154,.5);
-  }
-
-  .hero{
-    padding:28px;
-    display:grid;
-    grid-template-columns:1.35fr .9fr;
-    gap:20px;
-    margin-bottom:22px;
-    overflow:hidden;
-    position:relative;
-  }
-  .hero::after{
-    content:"";
-    position:absolute;
-    right:-120px; top:-80px;
-    width:340px; height:340px;
-    background:radial-gradient(circle, rgba(217,178,108,.10), transparent 65%);
-    pointer-events:none;
-  }
-  .hero-left{min-width:0;padding-right:8px}
-  .hero-right{min-width:0}
-  .hero h1{
-    margin:16px 0 12px;
-    font-size:clamp(52px, 7vw, 82px);
-    line-height:.94;
-    letter-spacing:-.055em;
-    max-width:760px;
-    text-wrap:balance;
-  }
-  .hero-copy{
-    font-size:18px;
-    color:#dbe4ef;
-    max-width:760px;
-    line-height:1.5;
-    margin-bottom:24px;
-  }
-  .lock-row{
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
-  }
-  .lock-badge{
-    min-height:44px;
-    padding:0 18px;
-    border-radius:999px;
-    display:inline-flex;
-    align-items:center;
-    background:rgba(217,178,108,.08);
-    border:1px solid rgba(217,178,108,.20);
-    color:#f3ddb2;
-    font-weight:700;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
-    min-height:44px;
-    border-radius:999px;
-    gap:10px;
-    color:#f3ddb2;
-    font-size:12px;
-    letter-spacing:.10em;
-    text-transform:uppercase;
-    background:rgba(217,178,108,.08);
-    border:1px solid rgba(217,178,108,.20);
-  }
-  .lock-dot{
-    width:9px;height:9px;border-radius:50%;
-    background:linear-gradient(180deg,var(--gold2),var(--gold));
-    box-shadow:0 0 14px rgba(240,210,154,.35);
-  }
-  .lock-card{
-    margin-top:18px;
-    padding:18px 20px;
-    border-radius:22px;
-    background:rgba(255,255,255,.03);
-    border:1px solid var(--line);
-  }
-  .lock-head{
-    display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;
-    font-weight:800;
-  }
-  .lock-pill{
-    padding:8px 12px;border-radius:999px;
-    background:rgba(217,178,108,.10);
-    border:1px solid rgba(217,178,108,.20);
-    color:#f3ddb2;font-size:12px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;
-  }
-  .lock-copy{
-    color:#dbe4ef;
-    font-size:15px;
-    line-height:1.55;
-  }
-
-  .progress-card{
-    height:100%;
-    padding:24px;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015)),
-      rgba(12,18,26,.72);
-    border:1px solid var(--lineStrong);
-    border-radius:24px;
-  }
-  .progress-title{
-    font-size:14px;
-    text-transform:uppercase;
-    letter-spacing:.14em;
-    color:var(--gold2);
-    margin-bottom:14px;
-    font-weight:800;
-  }
-  .progress-core{
-    display:flex;
-    align-items:center;
-    gap:22px;
-    margin-bottom:18px;
-  }
-  .ring{
-    width:142px;height:142px;border-radius:50%;
-    background:conic-gradient(var(--gold) 0deg, rgba(255,255,255,.08) 0deg);
-    display:grid;place-items:center;position:relative;flex:0 0 auto;
-  }
-  .ring::before{
-    content:"";position:absolute;inset:14px;border-radius:50%;
-    background:linear-gradient(180deg, rgba(8,12,18,.95), rgba(11,16,23,.98));
-    border:1px solid rgba(255,255,255,.07);
-  }
-  .ring-center{position:relative;z-index:1;text-align:center}
-  .ring-day{font-size:42px;font-weight:800;line-height:1;margin-bottom:6px}
-  .ring-sub{font-size:14px;color:var(--muted);line-height:1.2}
-  .progress-copy{
-    color:#e8eef8;
-    font-size:17px;
-    line-height:1.55;
-    max-width:320px;
-  }
-
-  .pillars-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:18px;
-    margin-bottom:22px;
-  }
-  .pillar-card{
-    padding:24px;
-    min-height:265px;
-    display:flex;
-    flex-direction:column;
-  }
-  .pillar-top{
-    display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;
-  }
-  .pillar-num{
-    width:34px;height:34px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-weight:800;font-size:14px;
-    color:var(--gold2);
-    background:rgba(217,178,108,.10);
-    border:1px solid rgba(217,178,108,.18);
-  }
-  .pillar-name{
-    font-size:24px;font-weight:800;line-height:1.05;letter-spacing:-.02em;margin:0 0 14px;
-  }
-  .pillar-framework{
-    color:#dbe4ef;
-    font-size:16px;
-    line-height:1.55;
-    margin-bottom:16px;
-  }
-  .pillar-detail{
-    padding:14px 16px;
-    border-radius:16px;
-    background:rgba(255,255,255,.03);
-    border:1px solid var(--line);
-    color:#f5f7fb;
-    font-size:15px;
-    line-height:1.45;
-    margin-top:auto;
-  }
-  .pillar-foot{
-    margin-top:18px;
-    padding-top:16px;
-    border-top:1px solid rgba(255,255,255,.08);
-    color:var(--muted);
-    font-size:14px;
-    font-weight:600;
-  }
-
-  .bottom-grid{
-    display:grid;
-    grid-template-columns:1.05fr .95fr;
-    gap:18px;
-  }
-  .card{padding:24px}
-  .card h2{
-    margin:0 0 8px;
-    font-size:26px;
-    line-height:1.05;
-    letter-spacing:-.02em;
-  }
-  .sub{
-    color:var(--muted);
-    font-size:16px;
-    line-height:1.45;
-    margin-bottom:18px;
-  }
-  .field{margin-top:16px}
-  label{
-    display:block;margin-bottom:10px;font-size:14px;color:#e6edf7;font-weight:700;
-  }
-  input, textarea{
-    width:100%;min-height:58px;border-radius:18px;border:1px solid var(--line);
-    background:rgba(255,255,255,.045);color:var(--text);padding:16px 18px;outline:none;font:inherit;
-    transition:border-color .16s ease, box-shadow .16s ease, transform .16s ease;
-  }
-  textarea{min-height:118px;resize:vertical}
-  input::placeholder, textarea::placeholder{color:#8f9db0}
-  input:focus, textarea:focus{
-    border-color:rgba(217,178,108,.30);
-    box-shadow:0 0 0 4px rgba(217,178,108,.08);
-  }
-  .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
-  .task-list{display:grid;gap:10px;margin-top:18px}
-  .task{
-    display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:start;
-    padding:14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid var(--line);
-  }
-  .check{
-    width:22px;height:22px;border-radius:50%;border:1px solid rgba(217,178,108,.28);
-    background:rgba(217,178,108,.08);display:flex;align-items:center;justify-content:center;
-    cursor:pointer;user-select:none;margin-top:2px;
-  }
-  .task.done .check{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#111}
-  .task.done .task-text{text-decoration:line-through;color:#7e8a99}
-  .task-text{font-size:15px;line-height:1.45}
-  .task-delete{
-    border:0;background:transparent;color:#9aa6b7;cursor:pointer;font-size:20px;line-height:1;
-  }
-  .empty{
-    padding:16px;border-radius:16px;background:rgba(255,255,255,.03);border:1px dashed var(--line);color:var(--muted)
-  }
-  .momentum-score{
-    font-size:54px;
-    font-weight:900;
-    line-height:1;
-    letter-spacing:-.04em;
-    margin:10px 0 18px;
-  }
-  .momentum-bar{
-    height:14px;
-    border-radius:999px;
-    background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.06);
-    overflow:hidden;
-    margin-bottom:18px;
-  }
-  .momentum-bar > div{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg,var(--gold2),var(--gold));
-  }
-  .reflection-box{
-    margin-top:18px;
-    padding-top:18px;
-    border-top:1px solid rgba(255,255,255,.08);
-  }
-  .small{font-size:14px;color:var(--muted)}
-  @media (max-width: 1120px){
-    .hero{grid-template-columns:1fr}
-    .pillars-grid{grid-template-columns:1fr}
-    .bottom-grid{grid-template-columns:1fr}
-    .hero h1{max-width:none}
-  }
-  @media (max-width: 720px){
-    .shell{width:min(100% - 20px, 1320px)}
-    .hero,.card,.pillar-card{padding:20px}
-    .topbar{align-items:flex-start;flex-direction:column}
-    .progress-core{flex-direction:column;align-items:flex-start}
-    .ring{width:124px;height:124px}
-    .hero h1{font-size:44px}
-    .brand-name{font-size:26px}
-  }
-
-input, textarea {
-  font-size: 14px !important;
-}
-
-input::placeholder, textarea::placeholder {
-  font-size: 13px !important;
-  opacity: 0.6;
-}
-
-
-  .complete-btn{
-    min-height:46px;padding:0 18px;border-radius:999px;font-weight:700;border:0;cursor:pointer;
-    display:inline-flex;align-items:center;justify-content:center;font:inherit;
-    background:linear-gradient(180deg,#f0d29a,#d9b26c);color:#111;
-    box-shadow:0 14px 34px rgba(217,178,108,.22);
-    transition:transform .16s ease, box-shadow .16s ease, opacity .16s ease;
-  }
-  .complete-btn:hover{transform:translateY(-1px)}
-  .complete-btn[disabled]{
-    opacity:.45;
-    cursor:not-allowed;
-    transform:none;
-    box-shadow:none;
-  }
-  .completion-card{
-    margin-top:18px;
-    padding:18px 20px;
-    border-radius:20px;
-    background:rgba(255,255,255,.03);
-    border:1px solid rgba(255,255,255,.08);
-  }
-  .completion-state{
-    font-size:14px;
-    color:var(--muted);
-    line-height:1.5;
-  }
-  .completion-state strong{
-    color:#fff;
-  }
-
+:root{--line:rgba(255,255,255,.08);--lineStrong:rgba(255,255,255,.12);--text:#f5f7fb;--muted:#aeb7c4;--gold:#d9b26c;--gold2:#f0d29a;--shadow:0 24px 70px rgba(0,0,0,.42);--radius:26px}
+*{box-sizing:border-box} html,body{margin:0;padding:0}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 20% 0%,rgba(77,110,146,.18),transparent 25%),radial-gradient(circle at 80% 0%,rgba(217,178,108,.12),transparent 20%),linear-gradient(180deg,#0a0f15 0%,#0e1620 100%);min-height:100vh}
+a{color:inherit;text-decoration:none}.shell{width:min(100% - 32px,1320px);margin:0 auto;padding:26px 0 56px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.02em}
+.mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.02)),radial-gradient(circle at 30% 30%,rgba(240,210,154,.95),rgba(217,178,108,.22) 45%,transparent 62%),linear-gradient(180deg,#263748,#121923);border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.35)}
+.brand-name{font-size:30px;text-shadow:0 0 12px rgba(255,255,255,.12);letter-spacing:-.02em}.top-actions{display:flex;gap:10px;flex-wrap:wrap}
+.ghost-btn,.gold-btn,.danger-btn{min-height:46px;padding:0 18px;border-radius:999px;font-weight:700;border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font:inherit}
+.ghost-btn{background:rgba(255,255,255,.04);color:var(--text);border:1px solid var(--line)}
+.gold-btn{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#111;box-shadow:0 14px 34px rgba(217,178,108,.22)}
+.danger-btn{background:rgba(255,255,255,.03);color:#fff;border:1px solid rgba(255,255,255,.12)}
+.panel{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02)),rgba(11,16,23,.70);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(12px)}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--gold2);font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:linear-gradient(180deg,var(--gold2),var(--gold))}
+.hero{padding:28px;display:grid;grid-template-columns:1.35fr .9fr;gap:20px;margin-bottom:22px;overflow:hidden;position:relative}
+.hero h1{margin:16px 0 12px;font-size:clamp(52px,7vw,82px);line-height:.94;letter-spacing:-.055em;max-width:700px;text-wrap:balance}
+.hero-copy{font-size:18px;color:#dbe4ef;max-width:760px;line-height:1.5;margin-bottom:24px}
+.lock-row{display:flex;flex-wrap:wrap;gap:12px}.lock-badge{min-height:44px;padding:0 18px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;background:rgba(217,178,108,.08);border:1px solid rgba(217,178,108,.20);color:#f3ddb2;font-size:12px;letter-spacing:.10em;text-transform:uppercase;font-weight:700}
+.lock-dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(180deg,var(--gold2),var(--gold))}
+.lock-card{margin-top:18px;padding:18px 20px;border-radius:22px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.identity-note{color:var(--gold2);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;font-weight:800}
+.lock-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;font-weight:800}
+.lock-pill{padding:8px 12px;border-radius:999px;background:rgba(217,178,108,.10);border:1px solid rgba(217,178,108,.20);color:#f3ddb2;font-size:12px;font-weight:800;letter-spacing:.10em;text-transform:uppercase}
+.lock-copy{color:#dbe4ef;font-size:15px;line-height:1.55}
+.progress-card{height:100%;padding:24px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015)),rgba(12,18,26,.72);border:1px solid var(--lineStrong);border-radius:24px}
+.progress-title{font-size:14px;text-transform:uppercase;letter-spacing:.14em;color:var(--gold2);margin-bottom:14px;font-weight:800}
+.progress-core{display:flex;align-items:center;gap:22px;margin-bottom:18px}
+.ring{width:142px;height:142px;border-radius:50%;background:conic-gradient(var(--gold) 0deg,rgba(255,255,255,.08) 0deg);display:grid;place-items:center;position:relative;flex:0 0 auto}
+.ring::before{content:"";position:absolute;inset:14px;border-radius:50%;background:linear-gradient(180deg,rgba(8,12,18,.95),rgba(11,16,23,.98));border:1px solid rgba(255,255,255,.07)}
+.ring-center{position:relative;z-index:1;text-align:center}.ring-day{font-size:42px;font-weight:800;line-height:1;margin-bottom:6px}.ring-sub{font-size:14px;color:var(--muted);line-height:1.2}.progress-copy{color:#e8eef8;font-size:17px;line-height:1.55;max-width:320px}
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:22px}
+.pillar-card{padding:24px;min-height:265px;display:flex;flex-direction:column}.pillar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.pillar-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:var(--gold2);background:rgba(217,178,108,.10);border:1px solid rgba(217,178,108,.18)}
+.pillar-name{font-size:24px;font-weight:800;line-height:1.05;letter-spacing:-.02em;margin:0 0 14px}.pillar-framework{color:#dbe4ef;font-size:16px;line-height:1.55;margin-bottom:16px}
+.pillar-detail{padding:12px 14px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:#f5f7fb;font-size:14px;line-height:1.4;margin-top:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.pillar-foot{margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);color:var(--muted);font-size:14px;font-weight:600}
+.bottom-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.card{padding:24px}.card h2{margin:0 0 8px;font-size:26px;line-height:1.05;letter-spacing:-.02em}.sub{color:var(--muted);font-size:16px;line-height:1.45;margin-bottom:18px}
+.field{margin-top:16px} label{display:block;margin-bottom:10px;font-size:14px;color:#e6edf7;font-weight:700}
+input,textarea{width:100%;min-height:58px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--text);padding:16px 18px;outline:none;font:inherit;font-size:14px}
+textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placeholder{font-size:13px;opacity:.6;color:#8f9db0}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.task-list{display:grid;gap:10px;margin-top:18px}
+.task{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:start;padding:14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.check{width:22px;height:22px;border-radius:50%;border:1px solid rgba(217,178,108,.28);background:rgba(217,178,108,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;margin-top:2px}
+.task.done .check{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#111}.task.done .task-text{text-decoration:line-through;color:#7e8a99}
+.task-text{font-size:15px;line-height:1.45}.task-delete{border:0;background:transparent;color:#9aa6b7;cursor:pointer;font-size:20px;line-height:1}
+.empty{padding:16px;border-radius:16px;background:rgba(255,255,255,.03);border:1px dashed var(--line);color:var(--muted)}
+.momentum-score{font-size:54px;font-weight:900;line-height:1;letter-spacing:-.04em;margin:10px 0 18px}.momentum-bar{height:14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.06);overflow:hidden;margin-bottom:18px}
+.momentum-bar>div{height:100%;width:0%;background:linear-gradient(90deg,var(--gold2),var(--gold))}
+.reflection-box{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}.small{font-size:14px;color:var(--muted)}
+.log-list{display:grid;gap:10px;margin-top:16px}.log-item{padding:14px 16px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.10)}
+.log-date{font-size:11px;color:var(--gold2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:800}.log-text{font-size:15px;color:#eef4fb;line-height:1.55}
 </style>
 </head>
 <body>
-  <div class="shell">
-    <div class="topbar">
-      <div class="brand">
-        <div class="mark"></div>
-        <div class="brand-name">Morvexil</div>
+<div class="shell">
+  <div class="topbar">
+    <div class="brand"><div class="mark"></div><div class="brand-name">Morvexil</div></div>
+    <div class="top-actions">
+      <a class="ghost-btn" href="index.html">Back to Morvexil</a>
+        <a class="ghost-btn" href="auth.html">Login</a>
+        <button class="ghost-btn" onclick="logoutMorvexil()">Logout</button>
+      <button class="ghost-btn" onclick="resetTasks()">Clear tasks</button>
+      <button class="danger-btn" onclick="resetCycle()">Redefine cycle</button>
+    </div>
+  </div>
+
+  <section class="panel hero">
+    <div class="hero-left">
+      <div class="eyebrow">Morvexil System</div>
+      <h1 id="hero-objective">Stay inside the objective</h1>
+      <div class="hero-copy">One objective. Fixed structure. Controlled execution. Morvexil removes drift so the right work gets finished.</div>
+      <div class="lock-row">
+        <div class="lock-badge"><span class="lock-dot"></span> Objective locked</div>
+        <div class="lock-badge"><span class="lock-dot"></span> Structure locked</div>
+        <div class="lock-badge"><span class="lock-dot"></span> Capacity locked</div>
       </div>
-      <div class="top-actions">
-        <a class="ghost-btn" href="index.html">Back to Morvexil</a>
-        <button class="ghost-btn" onclick="resetTasks()">Clear tasks</button>
-        <button class="danger-btn" onclick="resetCycle()">Redefine cycle</button>
+      <div class="lock-card">
+        <div class="identity-note">System logic</div>
+        <div class="lock-head"><span>Morvexil protocol</span><span class="lock-pill">90-day commitment</span></div>
+        <div class="lock-copy">The structure is fixed on purpose. Do not renegotiate the objective when friction appears. Protect the cycle, finish the priorities, and let execution speak.</div>
       </div>
     </div>
-
-    <section class="panel hero">
-      <div class="hero-left">
-        <div class="eyebrow">Execution Environment</div>
-        <h1 id="hero-objective">Define your objective</h1>
-        <div class="hero-copy">This cycle is built around one objective. Protect it with discipline. Everything else stays secondary.</div>
-
-        <div class="lock-row">
-          <div class="lock-badge"><span class="lock-dot"></span> Objective locked</div>
-          <div class="lock-badge"><span class="lock-dot"></span> Structure locked</div>
-          <div class="lock-badge"><span class="lock-dot"></span> Capacity locked</div>
-        </div>
-
-        <div class="lock-card">
-          <div class="lock-head">
-            <span>Locked cycle mode</span>
-            <span class="lock-pill">90-day commitment</span>
-          </div>
-          <div class="lock-copy">
-            This cycle is intentionally fixed. Do not rewrite the target when pressure appears. Protect the structure, finish the work, and judge the cycle only after completion.
+    <div class="hero-right">
+      <div class="progress-card">
+        <div class="progress-title">Cycle progress</div>
+        <div class="progress-core">
+          <div class="ring" id="progress-ring"><div class="ring-center"><div class="ring-day" id="ring-day">1</div><div class="ring-sub">Day of 90</div></div></div>
+          <div>
+            <div class="progress-copy" id="progress-copy">Protect the structure. Finish this week’s priorities before expanding scope.</div>
+            <div class="small" id="progress-weekly" style="margin-top:12px;">Weekly progress: 0 / 3</div>
+            <div class="small" id="progress-status" style="margin-top:6px;">Status: Cycle active</div>
           </div>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="hero-right">
-        <div class="progress-card">
-          <div class="progress-title">Cycle progress</div>
-          <div class="progress-core">
-            <div class="ring" id="progress-ring">
-              <div class="ring-center">
-                <div class="ring-day" id="ring-day">1</div>
-                <div class="ring-sub">Day of 90</div>
-              </div>
-            </div>
-            <div>
-              <div class="progress-copy" id="progress-copy">
-                You do not need to manage everything. You need to protect the right work and execute with control.
-              </div>
-              <div class="small" id="progress-status" style="margin-top:12px;">Status: Day open</div>
-              <div class="small" id="progress-count" style="margin-top:6px;">Completed days: 0</div>
-            </div>
-          </div>
-        </div>
+  <section class="pillars-grid">
+    <article class="panel pillar-card">
+      <div class="pillar-top"><div class="pillar-num">1</div></div>
+      <div class="pillar-name">Product</div>
+      <div class="pillar-framework">Build the core asset that makes this objective real.</div>
+      <div class="pillar-detail" id="product-detail">Define what you are building.</div>
+      <div class="pillar-foot">Locked to the current 90-day cycle</div>
+    </article>
+    <article class="panel pillar-card">
+      <div class="pillar-top"><div class="pillar-num">2</div></div>
+      <div class="pillar-name">Distribution</div>
+      <div class="pillar-framework">Create consistent reach so the right people repeatedly see the work.</div>
+      <div class="pillar-detail" id="distribution-detail">Define how people will see your work.</div>
+      <div class="pillar-foot">Locked to the current 90-day cycle</div>
+    </article>
+    <article class="panel pillar-card">
+      <div class="pillar-top"><div class="pillar-num">3</div></div>
+      <div class="pillar-name">Sales</div>
+      <div class="pillar-framework">Convert attention into revenue through direct asks, offers, and follow-up.</div>
+      <div class="pillar-detail" id="sales-detail">Define how you convert attention into revenue.</div>
+      <div class="pillar-foot">Locked to the current 90-day cycle</div>
+    </article>
+  </section>
+
+  <section class="bottom-grid">
+    <div class="panel card">
+      <h2>Weekly execution</h2>
+      <div class="sub">Define up to 3 priorities for the current week. This is the execution container. Do not add more.</div>
+      <div class="field">
+        <label for="task-input">Add next priority</label>
+        <input id="task-input" type="text" placeholder="One priority for this week" />
       </div>
-    </section>
+      <div class="actions"><button class="gold-btn" onclick="addTask()">Add priority</button></div>
+      <div class="small" id="task-cap-note">Weekly limit: 3 priorities.</div>
+      <div class="task-list" id="task-list"></div>
+    </div>
 
-    <section class="pillars-grid">
-      <article class="panel pillar-card">
-        <div class="pillar-top"><div class="pillar-num">1</div></div>
-        <div class="pillar-name">Product</div>
-        <div class="pillar-framework">Build the core asset that makes this objective real.</div>
-        <div class="pillar-detail" id="product-detail">Define what you are building.</div>
-        <div class="pillar-foot">Locked to the current 90-day cycle</div>
-      </article>
-
-      <article class="panel pillar-card">
-        <div class="pillar-top"><div class="pillar-num">2</div></div>
-        <div class="pillar-name">Distribution</div>
-        <div class="pillar-framework">Create consistent reach so the right people repeatedly see the work.</div>
-        <div class="pillar-detail" id="distribution-detail">Define how people will see your work.</div>
-        <div class="pillar-foot">Locked to the current 90-day cycle</div>
-      </article>
-
-      <article class="panel pillar-card">
-        <div class="pillar-top"><div class="pillar-num">3</div></div>
-        <div class="pillar-name">Sales</div>
-        <div class="pillar-framework">Convert attention into revenue through direct asks, offers, and follow-up.</div>
-        <div class="pillar-detail" id="sales-detail">Define how you convert attention into revenue.</div>
-        <div class="pillar-foot">Locked to the current 90-day cycle</div>
-      </article>
-    </section>
-
-    <section class="bottom-grid">
-      <div class="panel card">
-        <h2>This week</h2>
-        <div class="sub">Define the few moves that actually push the objective forward. Keep it contained.</div>
-
-        <div class="field">
-          <label for="task-input">Add next task</label>
-          <input id="task-input" type="text" placeholder="One concrete move that pushes the objective forward" />
-        </div>
-
-        <div class="actions">
-          <button class="gold-btn" onclick="addTask()">Add task</button>
-        </div>
-        <div class="small" id="task-cap-note">Maximum 3 active moves.</div>
-
-        <div class="task-list" id="task-list"></div>
+    <div class="panel card">
+      <h2>Execution score</h2>
+      <div class="sub">Weekly score is earned through completed priorities.</div>
+      <div class="momentum-score" id="momentum-score">0 / 3</div>
+      <div class="momentum-bar"><div id="momentum-fill"></div></div>
+      <div class="small" id="momentum-text">No priorities completed yet. Start with one concrete move.</div>
+      <div class="small" id="score-breakdown" style="margin-top:8px;">Completed: 0 / 3 priorities</div>
+      <div class="reflection-box">
+        <label for="reflection">Execution log</label>
+        <textarea id="reflection" placeholder="Record only what materially moved the objective forward."></textarea>
+        <div class="actions"><button class="gold-btn" onclick="saveReflection()">Save reflection</button></div>
+        <div class="small" id="reflection-status">Nothing saved yet.</div>
+        <div class="log-list" id="daily-log-list"><div class="empty">No execution recorded yet.</div></div>
       </div>
-
-      <div class="panel card">
-        <h2>Momentum</h2>
-        <div class="sub">Score = completed moves + daily check.</div>
-        <div class="momentum-score" id="momentum-score">0 / 4</div>
-        <div class="momentum-bar"><div id="momentum-fill"></div></div>
-
-        <div class="small" id="momentum-text">No completion yet. Start with one concrete move.</div>
-        <div class="small" id="score-breakdown" style="margin-top:8px;">Completed: 0 moves • Daily check: no</div>
-
-        <div class="completion-card">
-          <div class="actions" style="margin-top:0;">
-            <button class="complete-btn" id="complete-day-btn" onclick="completeDay()" disabled>Complete day</button>
-          </div>
-          <div class="completion-state" id="completion-state">Complete all 3 moves and fill Daily check to close the day.</div>
-        </div>
-
-        <div class="reflection-box">
-          <label for="reflection">Daily check</label>
-          <textarea id="reflection" placeholder="What actually moved the objective today? Be specific."></textarea>
-          <div class="actions">
-            <button class="gold-btn" onclick="saveReflection()">Save reflection</button>
-          </div>
-          <div class="small" id="reflection-status">Nothing saved yet.</div>
-        </div>
-      </div>
-    </section>
-  </div>
+    </div>
+  </section>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const tasksKey = "morvexil_tasks";
-  const reflectionKey = "morvexil_reflection";
-  const cycleStartKey = "morvexil_cycle_start";
-  const cycleLockedKey = "morvexil_cycle_locked";
-  const completeDayKey = "morvexil_completed_days";
-  const lastCompletedDateKey = "morvexil_last_completed_date";
-  let state = loadState();
+const SUPABASE_URL = "https://gdjbwryoihbticuliwol.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkamJ3cnlvaWhidGljdWxpd29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NTA1MDMsImV4cCI6MjA5MDMyNjUwM30.21iafDk567oQSX7abwuU4lYZIvdsnQWpnZifK5ODmPU";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+<script>
+const DASHBOARD_VERSION="1.0";
+const stateKey="morvexil_state";
+const tasksKey="morvexil_tasks";
+const reflectionKey="morvexil_reflection";
+const reflectionLogKey="morvexil_reflection_log";
+const cycleStartKey="morvexil_cycle_start";
+const cycleLockedKey="morvexil_cycle_locked";
+let currentSession=null;
+let dbTasks=[];
+let dbReflectionLog={};
 
-  const SUPABASE_URL = "https://gdjbwryoihbticuliwol.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_iGUQcAdQtGI-C-xs6jtbcQ_gDvKpwkK";
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+function cleanInput(text,max){return String(text||"").replace(/[<>]/g,"").replace(/\s+/g," ").trim().slice(0,max);}
+function safeArray(value){return Array.isArray(value)?value:[];}
+function safeObject(value){return value&&typeof value==="object"&&!Array.isArray(value)?value:{};}
+function saveState(state){
+  const current=safeObject(state), details=safeObject(current.pillarDetails);
+  const safeState={version:DASHBOARD_VERSION,objective:cleanInput(current.objective,50),pillars:["Product","Distribution","Sales"],pillarDetails:{product:cleanInput(details.product,40),distribution:cleanInput(details.distribution,40),sales:cleanInput(details.sales,40)}};
+  localStorage.setItem(stateKey,JSON.stringify(safeState));
+  return safeState;
+}
+function renderText(id,text){const el=document.getElementById(id); if(el) el.textContent=text||"";}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(stateKey);
+    if(!raw) return saveState({});
+    return saveState(JSON.parse(raw));
+  }catch(e){
+    return saveState({});
+  }
+}
 
-  async function bootstrapDashboard(){
-    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
-    const session = sessionData && sessionData.session ? sessionData.session : null;
-
-    if (sessionError || !session || !session.user) {
-      window.location.href = "auth.html";
-      return false;
-    }
-
-    const { data: profile, error: profileError } = await supabaseClient
-      .from("profiles")
-      .select("paid")
-      .eq("id", session.user.id)
-      .maybeSingle();
-
-    if (profileError || !profile || profile.paid !== true) {
-      window.location.href = "index.html";
-      return false;
-    }
-
-    const { data: cycle, error: cycleError } = await supabaseClient
-      .from("cycles")
-      .select("objective, product_pillar, distribution_pillar, sales_pillar, onboarding_completed, created_at")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    if (cycleError || !cycle || cycle.onboarding_completed !== true) {
-      window.location.href = "onboarding.html";
-      return false;
-    }
-
-    state = {
-      objective: cycle.objective || "",
-      pillarDetails: {
-        product: cycle.product_pillar || "",
-        distribution: cycle.distribution_pillar || "",
-        sales: cycle.sales_pillar || ""
-      }
-    };
-
-    localStorage.setItem("morvexil_state", JSON.stringify(state));
-
-    if (cycle.created_at && !localStorage.getItem(cycleStartKey)) {
-      localStorage.setItem(cycleStartKey, cycle.created_at);
-    }
-
-    return true;
+async function requireMorvexilAuth(){
+  const { data } = await supabaseClient.auth.getSession();
+  if(!data || !data.session){
+    window.location.href = "auth.html";
+    return null;
   }
 
-  function loadState(){
-    try{
-      const raw = localStorage.getItem("morvexil_state");
-      if(!raw) return {};
-      return JSON.parse(raw);
-    }catch(e){
-      return {};
-    }
+  const session = data.session;
+
+  const { data: profileData, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("paid")
+    .eq("id", session.user.id)
+    .single();
+
+  if(profileError || !profileData || profileData.paid !== true){
+    window.location.href = "index.html";
+    return null;
   }
 
-  function loadTasks(){
-    try{
-      return JSON.parse(localStorage.getItem(tasksKey) || "[]");
-    }catch(e){
-      return [];
-    }
+  return session;
+}
+
+async function syncCycleFromDatabase(userId){
+  const { data, error } = await supabaseClient
+    .from("cycles")
+    .select("objective, product_pillar, distribution_pillar, sales_pillar, onboarding_completed")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if(error || !data){
+    return false;
   }
 
-  function saveTasks(tasks){
-    localStorage.setItem(tasksKey, JSON.stringify(tasks));
-  }
-
-  function ensureCycleStart(){
-    let stored = localStorage.getItem(cycleStartKey);
-    if(!stored){
-      stored = new Date().toISOString();
-      localStorage.setItem(cycleStartKey, stored);
-    }
-    return new Date(stored);
-  }
-
-  function ensureCycleLocked(){
-    if(!localStorage.getItem(cycleLockedKey)){
-      localStorage.setItem(cycleLockedKey, "true");
-    }
-    return localStorage.getItem(cycleLockedKey) === "true";
-  }
-
-
-  function getTodayKey(){
-    const now = new Date();
-    return now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
-  }
-
-  function loadCompletedDays(){
-    try{
-      return JSON.parse(localStorage.getItem(completeDayKey) || "[]");
-    }catch(e){
-      return [];
-    }
-  }
-
-  function saveCompletedDays(days){
-    localStorage.setItem(completeDayKey, JSON.stringify(days));
-  }
-
-  function renderHero(){
-    const objective = String(state.objective || "").trim();
-    document.getElementById("hero-objective").textContent = objective || "Define your objective";
-  }
-
-  function renderPillarDetails(){
-    const details = state.pillarDetails || {};
-    document.getElementById("product-detail").textContent =
-      String(details.product || "").trim() || "Define what you are building.";
-    document.getElementById("distribution-detail").textContent =
-      String(details.distribution || "").trim() || "Define how people will see your work.";
-    document.getElementById("sales-detail").textContent =
-      String(details.sales || "").trim() || "Define how you convert attention into revenue.";
-  }
-
-  function renderProgress(){
-    const startDate = ensureCycleStart();
-    const now = new Date();
-    const msPerDay = 24 * 60 * 60 * 1000;
-    const rawDay = Math.floor((now - startDate) / msPerDay) + 1;
-    const day = Math.min(90, Math.max(1, rawDay));
-    const degrees = (day / 90) * 360;
-
-    document.getElementById("ring-day").textContent = day;
-    document.getElementById("progress-ring").style.background =
-      `conic-gradient(var(--gold) ${degrees}deg, rgba(255,255,255,.08) ${degrees}deg)`;
-
-    const today = getTodayKey();
-    const completedToday = localStorage.getItem(lastCompletedDateKey) === today;
-    const completedDays = loadCompletedDays().length;
-
-    let text = "You do not need to manage everything. You need to protect the right work and execute with control.";
-    let status = "Status: Day open";
-
-    if(completedToday){
-      text = "Day completed. Return tomorrow and protect the next move.";
-      status = "Status: Day completed";
-    } else if(day > 30 && day <= 60){
-      text = "The cycle is in motion. Cut drift, protect momentum, and keep shipping the right work.";
-      status = "Status: Day open";
-    } else if(day > 60){
-      text = "The cycle is closing. Remove noise, finish strong, and convert effort into visible completion.";
-      status = "Status: Day open";
-    } else {
-      text = "The day is still open. Close all 3 moves and Daily check before you finish.";
-      status = "Status: Day open";
-    }
-
-    document.getElementById("progress-copy").textContent = text;
-    const statusEl = document.getElementById("progress-status");
-    const countEl = document.getElementById("progress-count");
-    if(statusEl) statusEl.textContent = status;
-    if(countEl) countEl.textContent = "Completed days: " + completedDays;
-  }
-
-  function renderTasks(){
-    const tasks = loadTasks();
-    const wrap = document.getElementById("task-list");
-    wrap.innerHTML = "";
-    const capNote = document.getElementById("task-cap-note");
-    if(capNote){
-      capNote.textContent = tasks.length >= 3
-        ? "3-move limit reached. Complete or delete one move before adding another."
-        : "Maximum 3 active moves.";
-    }
-
-    if(!tasks.length){
-      wrap.innerHTML = '<div class="empty">No tasks yet. Add the next concrete move.</div>';
-      renderMomentum();
-      return;
-    }
-
-    tasks.forEach((task, idx) => {
-      const row = document.createElement("div");
-      row.className = "task" + (task.done ? " done" : "");
-      row.innerHTML = `
-        <div class="check" onclick="toggleTask(${idx})">${task.done ? "✓" : ""}</div>
-        <div class="task-text">${escapeHtml(task.text)}</div>
-        <button class="task-delete" onclick="deleteTask(${idx})">×</button>
-      `;
-      wrap.appendChild(row);
-    });
-
-    renderMomentum();
-    renderProgress();
-  }
-
-  function renderMomentum(){
-    const tasks = loadTasks();
-    const doneMoves = tasks.filter(t => t.done).length;
-
-    const textareaValue = document.getElementById("reflection")
-      ? document.getElementById("reflection").value.trim()
-      : "";
-    const storedReflection = (localStorage.getItem(reflectionKey) || "").trim();
-    const reflection = textareaValue || storedReflection;
-    const reflectionPoint = reflection.length > 0 ? 1 : 0;
-
-    const totalScore = Math.min(4, doneMoves + reflectionPoint);
-    const displayTarget = 4;
-
-    document.getElementById("momentum-score").textContent = totalScore + " / " + displayTarget;
-    document.getElementById("momentum-fill").style.width = Math.min(100, (totalScore / displayTarget) * 100) + "%";
-
-    let text = "No completion yet. Start with one concrete move.";
-    if(totalScore === 1) text = reflectionPoint ? "Daily check is logged. Now complete the first move." : "Good. First visible progress is on the board.";
-    if(totalScore === 2) text = "Momentum is building. Protect it and complete the next move.";
-    if(totalScore === 3) text = "Strong week. One more point closes the cycle standard.";
-    if(totalScore >= 4) text = "Full score. Completion is visible and the day is ready to close.";
-    document.getElementById("momentum-text").textContent = text;
-
-    const moveLabel = doneMoves === 1 ? "move" : "moves";
-    document.getElementById("score-breakdown").textContent =
-      "Completed: " + doneMoves + " " + moveLabel + " • Daily check: " + (reflectionPoint ? "yes" : "no");
-
-    const completedToday = localStorage.getItem(lastCompletedDateKey) === getTodayKey();
-    const btn = document.getElementById("complete-day-btn");
-    const stateEl = document.getElementById("completion-state");
-
-    if(completedToday){
-      btn.disabled = true;
-      btn.textContent = "Day completed";
-      stateEl.innerHTML = "<strong>Day closed.</strong> The current day has been completed and logged.";
-      return;
-    }
-
-    const ready = doneMoves >= 3 && reflectionPoint === 1;
-    btn.disabled = !ready;
-    btn.textContent = "Complete day";
-
-    if(ready){
-      stateEl.innerHTML = "<strong>Ready to close.</strong> All 3 moves are complete and Daily check is filled.";
-    }else if(doneMoves >= 3 && !reflectionPoint){
-      stateEl.innerHTML = "<strong>Almost there.</strong> Add Daily check to close the day.";
-    }else if(doneMoves < 3 && reflectionPoint){
-      stateEl.innerHTML = "<strong>Daily check is done.</strong> Complete all 3 moves to close the day.";
-    }else{
-      stateEl.innerHTML = "Complete all 3 moves and fill Daily check to close the day.";
-    }
-  }
-
-  function completeDay(){
-    const tasks = loadTasks();
-    const doneMoves = tasks.filter(t => t.done).length;
-    const reflection = (document.getElementById("reflection").value.trim() || (localStorage.getItem(reflectionKey) || "").trim());
-    const ready = doneMoves >= 3 && reflection.length > 0;
-    if(!ready){
-      renderMomentum();
-      return;
-    }
-
-    const today = getTodayKey();
-    const completedDays = loadCompletedDays();
-    if(!completedDays.includes(today)){
-      completedDays.push(today);
-      saveCompletedDays(completedDays);
-    }
-    localStorage.setItem(lastCompletedDateKey, today);
-    renderMomentum();
-    renderProgress();
-  }
-  function addTask(){
-    const input = document.getElementById("task-input");
-    const text = input.value.trim();
-    if(!text) return;
-    const tasks = loadTasks();
-    if(tasks.length >= 3){
-      document.getElementById("task-cap-note").textContent = "3-move limit reached. Complete or delete one move before adding another.";
-      return;
-    }
-    tasks.push({ text, done:false });
-    saveTasks(tasks);
-    input.value = "";
-    document.getElementById("task-cap-note").textContent = "Maximum 3 active moves.";
-    renderTasks();
-  }
-
-  function toggleTask(index){
-    const tasks = loadTasks();
-    if(!tasks[index]) return;
-    tasks[index].done = !tasks[index].done;
-    saveTasks(tasks);
-    renderTasks();
-  }
-
-  function deleteTask(index){
-    const tasks = loadTasks();
-    tasks.splice(index, 1);
-    saveTasks(tasks);
-    renderTasks();
-    renderProgress();
-  }
-
-  function resetTasks(){
-    localStorage.removeItem(tasksKey);
-    renderTasks();
-    renderProgress();
-  }
-
-  function resetCycle(){
-    const confirmed = window.confirm("Redefine this 90-day cycle? This will clear the current objective, structure, tasks, reflection, and cycle progress. Continue only if you want to start a new cycle.");
-    if(!confirmed) return;
-
-    localStorage.removeItem("morvexil_state");
-    localStorage.removeItem("morvexil_tasks");
-    localStorage.removeItem("morvexil_reflection");
-    localStorage.removeItem("morvexil_cycle_start");
-    localStorage.removeItem("morvexil_cycle_locked");
-    localStorage.removeItem("morvexil_completed_days");
-    localStorage.removeItem("morvexil_last_completed_date");
+  if(!data.onboarding_completed){
     window.location.href = "onboarding.html";
+    return false;
   }
 
-  function saveReflection(){
-    const text = document.getElementById("reflection").value.trim();
-    localStorage.setItem(reflectionKey, text);
-    document.getElementById("reflection-status").textContent = text ? "Last entry: " + text : "Nothing saved yet.";
-    renderMomentum();
-    renderMomentum();
-  }
-
-  function loadReflection(){
-    const raw = localStorage.getItem(reflectionKey) || "";
-    const text = raw.trim();
-    if(raw !== text){
-      localStorage.setItem(reflectionKey, text);
+  const nextState = saveState({
+    objective: data.objective || "",
+    pillars: ["Product","Distribution","Sales"],
+    pillarDetails: {
+      product: data.product_pillar || "",
+      distribution: data.distribution_pillar || "",
+      sales: data.sales_pillar || ""
     }
-    document.getElementById("reflection").value = text;
-    document.getElementById("reflection-status").textContent = text.length > 0 ? "Last entry: " + text : "Nothing saved yet.";
-    renderMomentum();
+  });
+  return nextState;
+}
+
+async function logoutMorvexil(){
+  await supabaseClient.auth.signOut();
+  window.location.href = "auth.html";
+}
+function loadTasks(){
+  return safeArray(dbTasks).slice(0,3).map(task=>({
+    id:safeObject(task).id||null,
+    text:cleanInput(safeObject(task).text,60),
+    done:!!safeObject(task).done
+  })).filter(task=>task.text.length>0);
+}
+function saveTasks(tasks){
+  const safeTasks=safeArray(tasks).slice(0,3).map(task=>({
+    id:safeObject(task).id||null,
+    text:cleanInput(safeObject(task).text,60),
+    done:!!safeObject(task).done
+  })).filter(task=>task.text.length>0);
+  dbTasks=safeTasks;
+  localStorage.setItem(tasksKey,JSON.stringify(safeTasks.map(({text,done})=>({text,done}))));
+}
+function loadReflectionLog(){
+  return safeObject(dbReflectionLog);
+}
+function saveReflectionLog(log){
+  const obj=safeObject(log), safeLog={};
+  Object.keys(obj).sort().slice(-30).forEach(key=>{
+    const cleaned=cleanInput(obj[key],160);
+    if(cleaned) safeLog[key]=cleaned;
+  });
+  dbReflectionLog=safeLog;
+  localStorage.setItem(reflectionLogKey,JSON.stringify(safeLog));
+}
+async function loadDashboardCoreFromDatabase(userId){
+  const { data: priorities } = await supabaseClient
+    .from("weekly_priorities")
+    .select("id, text, done, position")
+    .eq("user_id", userId)
+    .order("position", { ascending: true });
+
+  dbTasks = safeArray(priorities).slice(0,3).map(row=>({
+    id: row.id,
+    text: cleanInput(row.text,60),
+    done: !!row.done
+  }));
+  localStorage.setItem(tasksKey, JSON.stringify(dbTasks.map(({text,done})=>({text,done}))));
+
+  const today = getTodayKey();
+  const { data: logs } = await supabaseClient
+    .from("daily_logs")
+    .select("id, entry_date, text")
+    .eq("user_id", userId)
+    .order("entry_date", { ascending: false })
+    .limit(30);
+
+  const safeLog={};
+  safeArray(logs).forEach(row=>{
+    const key=String(row.entry_date||"");
+    const cleaned=cleanInput(row.text,160);
+    if(key && cleaned) safeLog[key]=cleaned;
+  });
+  dbReflectionLog=safeLog;
+  localStorage.setItem(reflectionLogKey, JSON.stringify(safeLog));
+  localStorage.setItem(reflectionKey, safeLog[today] || "");
+}
+function getTodayKey(){const now=new Date(); return now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");}
+function formatEntryDate(key){const p=String(key).split("-"); return p.length===3 ? p[2]+"."+p[1]+"."+p[0] : key;}
+function ensureCycleStart(){let stored=localStorage.getItem(cycleStartKey); if(!stored){stored=new Date().toISOString(); localStorage.setItem(cycleStartKey,stored);} return new Date(stored);}
+function ensureCycleLocked(){if(!localStorage.getItem(cycleLockedKey)){localStorage.setItem(cycleLockedKey,"true");}}
+
+function renderHero(state){
+  const objective=cleanInput(safeObject(state).objective,50);
+  renderText("hero-objective", objective || "Stay inside the objective");
+}
+function renderPillarDetails(state){
+  const details=safeObject(safeObject(state).pillarDetails);
+  renderText("product-detail", cleanInput(details.product,40) || "Define what you are building.");
+  renderText("distribution-detail", cleanInput(details.distribution,40) || "Define how people will see your work.");
+  renderText("sales-detail", cleanInput(details.sales,40) || "Define how you convert attention into revenue.");
+}
+function renderProgress(){
+  const startDate=ensureCycleStart(), now=new Date(), ms=24*60*60*1000;
+  const day=Math.min(90,Math.max(1,Math.floor((now-startDate)/ms)+1));
+  const degrees=(day/90)*360;
+  renderText("ring-day", String(day));
+  document.getElementById("progress-ring").style.background=`conic-gradient(var(--gold) ${degrees}deg, rgba(255,255,255,.08) ${degrees}deg)`;
+  const done=loadTasks().filter(t=>t.done).length;
+  renderText("progress-weekly","Weekly progress: "+Math.min(3,done)+" / 3");
+  renderText("progress-status","Status: Cycle active");
+}
+function renderMomentum(){
+  const done=loadTasks().filter(t=>t.done).length, total=Math.min(3,done);
+  renderText("momentum-score", total+" / 3");
+  document.getElementById("momentum-fill").style.width=(total/3)*100+"%";
+  let text="No priorities completed yet. Start with one concrete move.";
+  if(total===1) text="Good. First priority completed.";
+  if(total===2) text="Strong progress. One more to close the week.";
+  if(total===3) text="All priorities completed. Week executed.";
+  renderText("momentum-text", text);
+  renderText("score-breakdown", "Completed: "+done+" / 3 priorities");
+}
+function escapeHtml(str){return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");}
+function renderTasks(){
+  const tasks=loadTasks(), wrap=document.getElementById("task-list");
+  wrap.innerHTML="";
+  document.getElementById("task-cap-note").textContent="Weekly limit: 3 priorities.";
+  if(!tasks.length){
+    wrap.innerHTML='<div class="empty">No priorities yet. Add the first concrete move.</div>';
+    renderMomentum(); renderProgress(); return;
+  }
+  tasks.forEach((task,idx)=>{
+    const row=document.createElement("div");
+    row.className="task"+(task.done?" done":"");
+    row.innerHTML=`<div class="check" onclick="toggleTask(${idx})">${task.done?"✓":""}</div><div class="task-text">${escapeHtml(task.text)}</div><button class="task-delete" onclick="deleteTask(${idx})">×</button>`;
+    wrap.appendChild(row);
+  });
+  renderMomentum(); renderProgress();
+}
+async function addTask(){
+  const input=document.getElementById("task-input");
+  if(!input || !currentSession) return;
+  const text=cleanInput(input.value,60);
+  if(!text) return;
+  const tasks=loadTasks();
+  if(tasks.length>=3){renderText("task-cap-note","Weekly limit: 3 priorities."); return;}
+
+  const { data, error } = await supabaseClient
+    .from("weekly_priorities")
+    .insert({
+      user_id: currentSession.user.id,
+      text: text,
+      done: false,
+      position: tasks.length
+    })
+    .select("id, text, done, position")
+    .single();
+
+  if(error){
+    alert("Could not save the priority. Please try again.");
+    return;
   }
 
-  function escapeHtml(str){
-    return String(str)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
+  dbTasks.push({id:data.id, text:data.text, done:!!data.done});
+  saveTasks(dbTasks);
+  input.value="";
+  renderTasks();
+}
+async function toggleTask(index){
+  if(!currentSession) return;
+  const tasks=loadTasks();
+  if(!tasks[index]) return;
+  const task=tasks[index];
+  const nextDone=!task.done;
+
+  const { error } = await supabaseClient
+    .from("weekly_priorities")
+    .update({ done: nextDone })
+    .eq("id", task.id)
+    .eq("user_id", currentSession.user.id);
+
+  if(error){
+    alert("Could not update the priority. Please try again.");
+    return;
   }
 
+  tasks[index].done=nextDone;
+  saveTasks(tasks);
+  renderTasks();
+}
+async function deleteTask(index){
+  if(!currentSession) return;
+  const tasks=loadTasks();
+  const task=tasks[index];
+  if(!task) return;
+
+  const { error } = await supabaseClient
+    .from("weekly_priorities")
+    .delete()
+    .eq("id", task.id)
+    .eq("user_id", currentSession.user.id);
+
+  if(error){
+    alert("Could not delete the priority. Please try again.");
+    return;
+  }
+
+  tasks.splice(index,1);
+  dbTasks = tasks.map((t, i)=>({id:t.id||null,text:t.text,done:t.done}));
+  saveTasks(dbTasks);
+
+  for(let i=0;i<dbTasks.length;i++){
+    if(!dbTasks[i].id) continue;
+    await supabaseClient.from("weekly_priorities").update({ position: i }).eq("id", dbTasks[i].id).eq("user_id", currentSession.user.id);
+  }
+  renderTasks();
+}
+async function resetTasks(){
+  if(!currentSession) return;
+  const { error } = await supabaseClient
+    .from("weekly_priorities")
+    .delete()
+    .eq("user_id", currentSession.user.id);
+
+  if(error){
+    alert("Could not clear priorities. Please try again.");
+    return;
+  }
+
+  dbTasks=[];
+  localStorage.removeItem(tasksKey);
+  renderTasks();
+  renderText("task-cap-note","Weekly limit: 3 priorities.");
+}
+async function saveReflection(){
+  const field=document.getElementById("reflection");
+  if(!field || !currentSession) return;
+  const text=cleanInput(field.value,160), today=getTodayKey();
+
+  if(text.length>0){
+    const { error } = await supabaseClient
+      .from("daily_logs")
+      .upsert({
+        user_id: currentSession.user.id,
+        entry_date: today,
+        text: text,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "user_id,entry_date" });
+
+    if(error){
+      alert("Could not save the reflection. Please try again.");
+      return;
+    }
+
+    localStorage.setItem(reflectionKey,text);
+    const log=loadReflectionLog();
+    log[today]=text;
+    saveReflectionLog(log);
+  } else {
+    await supabaseClient
+      .from("daily_logs")
+      .delete()
+      .eq("user_id", currentSession.user.id)
+      .eq("entry_date", today);
+
+    localStorage.removeItem(reflectionKey);
+    const log=loadReflectionLog();
+    delete log[today];
+    saveReflectionLog(log);
+  }
+
+  field.value=text;
+  renderText("reflection-status", text.length>0?"Saved to execution log.":"Nothing saved yet.");
+  renderDailyLog();
+}
+function loadReflection(){
+  const text=cleanInput(localStorage.getItem(reflectionKey)||"",160);
+  const field=document.getElementById("reflection");
+  if(field) field.value=text;
+  renderText("reflection-status", text.length>0?"Saved to execution log.":"Nothing saved yet.");
+  renderDailyLog();
+}
+function renderDailyLog(){
+  const wrap=document.getElementById("daily-log-list"), log=loadReflectionLog();
+  const entries=Object.entries(log).filter(([_,v])=>String(v||"").trim().length>0).sort((a,b)=>a[0]<b[0]?1:-1).slice(0,5);
+  if(!entries.length){wrap.innerHTML='<div class="empty">No execution recorded yet.</div>'; return;}
+  wrap.innerHTML=entries.map(([date,text])=>`<div class="log-item"><div class="log-date">${formatEntryDate(date)}</div><div class="log-text">${escapeHtml(String(text))}</div></div>`).join("");
+}
+function resetCycle(){
+  const confirmed=window.confirm("Redefine this 90-day cycle? This will clear the current objective, structure, weekly priorities, and execution log. Continue only if you want to start a new cycle.");
+  if(!confirmed) return;
+  localStorage.removeItem(stateKey);
+  localStorage.removeItem(tasksKey);
+  localStorage.removeItem(reflectionKey);
+  localStorage.removeItem(reflectionLogKey);
+  localStorage.removeItem(cycleStartKey);
+  localStorage.removeItem(cycleLockedKey);
+  window.location.href="onboarding.html";
+}
+(async function initDashboard(){
   ensureCycleLocked();
-  async function initDashboard(){
-    const allowed = await bootstrapDashboard();
-    if(!allowed) return;
+  const session = await requireMorvexilAuth();
+  if(!session) return;
+  currentSession = session;
 
-    renderHero();
-    renderPillarDetails();
-    renderProgress();
-    renderTasks();
-    loadReflection();
-  }
+  const syncedState = await syncCycleFromDatabase(session.user.id);
+  const state = syncedState || loadState();
 
-  initDashboard();
+  await loadDashboardCoreFromDatabase(session.user.id);
+
+  renderHero(state);
+  renderPillarDetails(state);
+  renderProgress();
+  renderTasks();
+  loadReflection();
+})();
 </script>
 </body>
 </html>

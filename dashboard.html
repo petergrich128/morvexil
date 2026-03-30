@@ -511,9 +511,16 @@ function renderDailyLog(){
   if(!entries.length){wrap.innerHTML='<div class="empty">No execution recorded yet.</div>'; return;}
   wrap.innerHTML=entries.map(([date,text])=>`<div class="log-item"><div class="log-date">${formatEntryDate(date)}</div><div class="log-text">${escapeHtml(String(text))}</div></div>`).join("");
 }
-function resetCycle(){
+async function resetCycle(){
   const confirmed=window.confirm("Redefine this 90-day cycle? This will clear the current objective, structure, weekly priorities, and execution log. Continue only if you want to start a new cycle.");
-  if(!confirmed) return;
+  if(!confirmed || !currentSession) return;
+
+  try{
+    await supabaseClient.from("weekly_priorities").delete().eq("user_id", currentSession.user.id);
+    await supabaseClient.from("daily_logs").delete().eq("user_id", currentSession.user.id);
+    await supabaseClient.from("cycles").delete().eq("user_id", currentSession.user.id);
+  }catch(e){}
+
   localStorage.removeItem(stateKey);
   localStorage.removeItem(tasksKey);
   localStorage.removeItem(reflectionKey);

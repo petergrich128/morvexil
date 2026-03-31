@@ -515,11 +515,23 @@ async function resetCycle(){
   const confirmed=window.confirm("Redefine this 90-day cycle? This will clear the current objective, structure, weekly priorities, and execution log. Continue only if you want to start a new cycle.");
   if(!confirmed || !currentSession) return;
 
-  try{
-    await supabaseClient.from("weekly_priorities").delete().eq("user_id", currentSession.user.id);
-    await supabaseClient.from("daily_logs").delete().eq("user_id", currentSession.user.id);
-    await supabaseClient.from("cycles").delete().eq("user_id", currentSession.user.id);
-  }catch(e){}
+  const prioritiesResult = await supabaseClient.from("weekly_priorities").delete().eq("user_id", currentSession.user.id);
+  if(prioritiesResult.error){
+    alert("Reset failed at priorities delete.");
+    return;
+  }
+
+  const logsResult = await supabaseClient.from("daily_logs").delete().eq("user_id", currentSession.user.id);
+  if(logsResult.error){
+    alert("Reset failed at daily logs delete.");
+    return;
+  }
+
+  const cycleResult = await supabaseClient.from("cycles").delete().eq("user_id", currentSession.user.id);
+  if(cycleResult.error){
+    alert("Reset failed at cycle delete.");
+    return;
+  }
 
   localStorage.removeItem(stateKey);
   localStorage.removeItem(tasksKey);

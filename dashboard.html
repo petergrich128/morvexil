@@ -445,13 +445,7 @@ function renderTasks(){
 async function addTask(){
   const input=document.getElementById("task-input");
   const note=document.getElementById("task-cap-note");
-  if(!input){
-    return;
-  }
-  if(!currentSession){
-    if(note) note.textContent="Session not ready. Refresh and try again.";
-    return;
-  }
+  if(!input) return;
 
   const text=cleanInput(input.value,60);
   if(!text){
@@ -466,7 +460,21 @@ async function addTask(){
     return;
   }
 
-  if(note) note.textContent="Saving priority...";
+  // Local-first add so the button always works immediately
+  const tempId="local_"+Date.now();
+  const nextTask={id:tempId,text:text,done:false};
+  dbTasks=[...tasks,nextTask];
+  saveTasks(dbTasks);
+  input.value="";
+  if(note) note.textContent="";
+  renderTasks();
+  input.focus();
+
+  // Best-effort database sync
+  if(!currentSession){
+    if(note) note.textContent="Saved locally. Refresh login later to sync.";
+    return;
+  }
 
   const { data, error } = await supabaseClient
     .from("weekly_priorities")
@@ -480,23 +488,25 @@ async function addTask(){
     .single();
 
   if(error){
-    if(note) note.textContent="Could not save the priority. Please try again.";
+    if(note) note.textContent="Saved locally. Database sync failed.";
     return;
   }
 
-  dbTasks.push({id:data.id, text:data.text, done:!!data.done});
+  dbTasks=dbTasks.map(task => task.id===tempId ? {id:data.id, text:data.text, done:!!data.done} : task);
   saveTasks(dbTasks);
-  input.value="";
-  if(note) note.textContent="";
   renderTasks();
-  input.focus();
 }
 async function toggleTask(index){
-  if(!currentSession) return;
   const tasks=loadTasks();
   if(!tasks[index]) return;
   const task=tasks[index];
   const nextDone=!task.done;
+
+  tasks[index].done=nextDone;
+  saveTasks(tasks);
+  renderTasks();
+
+  if(!currentSession || String(task.id).startsWith("local_")) return;
 
   const { error } = await supabaseClient
     .from("weekly_priorities")
@@ -505,19 +515,20 @@ async function toggleTask(index){
     .eq("user_id", currentSession.user.id);
 
   if(error){
-    alert("Could not update the priority. Please try again.");
-    return;
+    alert("Priority updated locally, but database sync failed.");
   }
-
-  tasks[index].done=nextDone;
-  saveTasks(tasks);
-  renderTasks();
 }
 async function deleteTask(index){
-  if(!currentSession) return;
   const tasks=loadTasks();
   const task=tasks[index];
   if(!task) return;
+
+  tasks.splice(index,1);
+  dbTasks = tasks.map((t)=>({id:t.id||null,text:t.text,done:t.done}));
+  saveTasks(dbTasks);
+  renderTasks();
+
+  if(!currentSession || String(task.id).startsWith("local_")) return;
 
   const { error } = await supabaseClient
     .from("weekly_priorities")
@@ -526,19 +537,14 @@ async function deleteTask(index){
     .eq("user_id", currentSession.user.id);
 
   if(error){
-    alert("Could not delete the priority. Please try again.");
+    alert("Priority removed locally, but database sync failed.");
     return;
   }
 
-  tasks.splice(index,1);
-  dbTasks = tasks.map((t, i)=>({id:t.id||null,text:t.text,done:t.done}));
-  saveTasks(dbTasks);
-
   for(let i=0;i<dbTasks.length;i++){
-    if(!dbTasks[i].id) continue;
+    if(!dbTasks[i].id || String(dbTasks[i].id).startsWith("local_")) continue;
     await supabaseClient.from("weekly_priorities").update({ position: i }).eq("id", dbTasks[i].id).eq("user_id", currentSession.user.id);
   }
-  renderTasks();
 }
 async function resetTasks(){
   if(!currentSession) return;

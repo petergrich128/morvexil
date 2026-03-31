@@ -140,7 +140,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
 
     <div class="panel card">
       <h2>Execution score</h2>
-      <div class="sub">Weekly score is earned through completed priorities.</div>
+      <div class="sub">Score is earned only through completed priorities.</div>
       <div class="momentum-score" id="momentum-score">0 / 3</div>
       <div class="momentum-bar"><div id="momentum-fill"></div></div>
       <div class="small" id="momentum-text">No priorities completed yet. Start with one concrete move.</div>
@@ -161,7 +161,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
           <textarea id="reflection-next" placeholder="Define the single move that matters most next."></textarea>
         </div>
         <div class="actions"><button class="gold-btn" onclick="saveReflection()">Save weekly review</button></div>
-        <div class="small" id="reflection-status">Nothing saved yet.</div>
+        <div class="small" id="reflection-status">No weekly review saved yet.</div>
         <div class="log-list" id="daily-log-list"><div class="empty">No weekly reviews recorded yet.</div></div>
       </div>
     </div>
@@ -534,7 +534,7 @@ function saveReflection(){
         const log=loadReflectionLog();
         delete log[today];
         saveReflectionLog(log);
-        renderText("reflection-status","Nothing saved yet.");
+        renderText("reflection-status","No weekly review saved yet.");
         renderDailyLog();
       });
   }
@@ -552,7 +552,7 @@ function loadReflection(){
   if(winField) winField.value=parsed.win||"";
   if(frictionField) frictionField.value=parsed.friction||"";
   if(nextField) nextField.value=parsed.next||"";
-  renderText("reflection-status", text.length>0?"Saved to weekly review log.":"Nothing saved yet.");
+  renderText("reflection-status", text.length>0?"Saved to weekly review log.":"No weekly review saved yet.");
   renderDailyLog();
 }
 function renderDailyLog(){

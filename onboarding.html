@@ -47,6 +47,11 @@ async function requireMorvexilAuth() {
   return session;
 }
 
+async function logoutMorvexil() {
+  await supabaseClient.auth.signOut();
+  window.location.href = "auth.html";
+}
+
 async function save() {
   const session = await requireMorvexilAuth();
   if (!session) return;
@@ -111,7 +116,7 @@ async function save() {
 <body>
 <div style="position:fixed; top:20px; left:20px; z-index:999;">
   <a href="index.html" style="color:#aaa;text-decoration:none;font-size:14px;transition:0.2s;font-family: Inter, sans-serif;"
-     onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">← Back to Morvexil</a> <a href="auth.html" style="margin-left:16px;color:#aaa;text-decoration:none;font-size:14px;transition:0.2s;font-family: Inter, sans-serif;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">Login</a>
+     onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">← Back to Morvexil</a> <a href="auth.html" style="margin-left:16px;color:#aaa;text-decoration:none;font-size:14px;transition:0.2s;font-family: Inter, sans-serif;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">Login</a> <button onclick="logoutMorvexil()" style="margin-left:16px;background:transparent;border:0;color:#aaa;font-size:14px;cursor:pointer;transition:0.2s;font-family: Inter, sans-serif;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">Logout</button>
 </div>
 <div class="container">
 <h1>Define your 90-day cycle</h1>

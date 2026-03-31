@@ -161,14 +161,14 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
   <section class="bottom-grid">
     <div class="panel card">
       <h2>Weekly execution</h2>
-      <div class="sub">Define up to 3 priorities for the current week. This is your execution container. Do not add more than 3 priorities.</div>
-      <div class="small" style="margin-bottom:14px;color:#d7e0ec;">If it doesn’t move the objective, it doesn’t belong here.</div>
+      <div class="sub">Define up to 3 priorities for this week. This is your execution container.</div>
+      <div class="small" style="margin-bottom:14px;color:#d7e0ec;">If it doesn’t move the objective, it doesn’t belong.</div>
       <div class="field">
-        <label for="task-input">Add next priority</label>
+        <label for="task-input">Next priority</label>
         <input id="task-input" type="text" placeholder="One priority for this week" />
       </div>
       <div class="actions"><button class="gold-btn" onclick="addTask()">Add priority</button></div>
-      <div class="small" id="task-cap-note">Weekly limit: 3 priorities.</div>
+      <div class="small" id="task-cap-note"></div>
       <div class="task-list" id="task-list"></div>
     </div>
 
@@ -429,7 +429,7 @@ function escapeHtml(str){return String(str).replaceAll("&","&amp;").replaceAll("
 function renderTasks(){
   const tasks=loadTasks(), wrap=document.getElementById("task-list");
   wrap.innerHTML="";
-  document.getElementById("task-cap-note").textContent="Weekly limit: 3 priorities.";
+  document.getElementById("task-cap-note").textContent="";
   if(!tasks.length){
     wrap.innerHTML='<div class="empty">No priorities yet. Add the first concrete move.</div>';
     renderMomentum(); renderProgress(); return;
@@ -448,7 +448,7 @@ async function addTask(){
   const text=cleanInput(input.value,60);
   if(!text) return;
   const tasks=loadTasks();
-  if(tasks.length>=3){renderText("task-cap-note","Weekly limit: 3 priorities."); return;}
+  if(tasks.length>=3){renderText("task-cap-note",""); return;}
 
   const { data, error } = await supabaseClient
     .from("weekly_priorities")
@@ -535,7 +535,7 @@ async function resetTasks(){
   dbTasks=[];
   localStorage.removeItem(tasksKey);
   renderTasks();
-  renderText("task-cap-note","Weekly limit: 3 priorities.");
+  renderText("task-cap-note","");
 }
 async function buildReflectionPayload(winText,frictionText,nextText){
   const parts=[];

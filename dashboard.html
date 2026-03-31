@@ -68,7 +68,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
 .momentum-bar>div{height:100%;width:0%;background:linear-gradient(90deg,var(--gold2),var(--gold))}
 .reflection-box{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}.small{font-size:14px;color:var(--muted)}
 .log-list{display:grid;gap:10px;margin-top:16px}.log-item{padding:14px 16px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.10)}
-.log-date{font-size:11px;color:var(--gold2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:800}.log-text{font-size:15px;color:#eef4fb;line-height:1.55}
+.log-date{font-size:11px;color:var(--gold2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:800}.log-text{font-size:15px;color:#eef4fb;line-height:1.55;white-space:pre-line}.log-section-title{display:block;color:#f0d29a;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:10px 0 4px}
 </style>
 </head>
 <body>
@@ -292,7 +292,12 @@ async function syncCycleFromDatabase(userId){
 }
 
 async function logoutMorvexil(){
-  await supabaseClient.auth.signOut();
+  try{
+    await supabaseClient.auth.signOut();
+  }catch(e){}
+  localStorage.removeItem(tasksKey);
+  localStorage.removeItem(reflectionKey);
+  localStorage.removeItem(reflectionLogKey);
   window.location.href = "auth.html";
 }
 function loadTasks(){
@@ -390,19 +395,19 @@ function renderProgress(){
   let rule="Do not expand scope. Lock the first priority and execute inside the current week.";
 
   if(done===1){
-    copy="Good. The week is in motion. Keep the current container tight.";
+    copy="One priority is in motion. Keep the container tight and continue execution.";
     topline="One priority is moving. Stay inside the current week.";
     status="Status: Week in motion";
     rule="Do not add more scope. Finish the remaining priorities already inside this week.";
   }
   if(done===2){
-    copy="Strong progress. Close the week before opening new work.";
+    copy="Two priorities are done. Close the week before opening new work.";
     topline="Two priorities completed. Protect the final move.";
     status="Status: Strong weekly progress";
     rule="Finish the final priority first. Review only after the weekly container is closed.";
   }
   if(done===3){
-    copy="Weekly container complete. Review the week and define the next move with intention.";
+    copy="The weekly container is complete. Review the week, then define the next move.";
     topline="This week is complete. Close it properly before starting the next one.";
     status="Status: Weekly container complete";
     rule="Do not reopen the week. Save the review, then define the next highest-leverage priority.";
@@ -423,8 +428,7 @@ function renderMomentum(){
   if(total===2) text="Strong progress. One more to close the week.";
   if(total===3) text="All priorities completed. Week executed.";
   renderText("momentum-text", text);
-  renderText("score-breakdown", "Completed: "+done+" / 3 priorities");
-}
+  }
 function escapeHtml(str){return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");}
 function renderTasks(){
   const tasks=loadTasks(), wrap=document.getElementById("task-list");
@@ -566,7 +570,9 @@ async function buildReflectionPayload(winText,frictionText,nextText){
   if(winText) parts.push("WIN: "+winText);
   if(frictionText) parts.push("FRICTION: "+frictionText);
   if(nextText) parts.push("NEXT: "+nextText);
-  return parts.join("\n\n");
+  return parts.join("
+
+");
 }
 function parseReflectionPayload(text){
   const raw=String(text||"");
@@ -580,7 +586,7 @@ function parseReflectionPayload(text){
   });
   return out;
 }
-function saveReflection(){
+async function saveReflection(){
   const winField=document.getElementById("reflection-win");
   const frictionField=document.getElementById("reflection-friction");
   const nextField=document.getElementById("reflection-next");
@@ -593,48 +599,45 @@ function saveReflection(){
   const today=getTodayKey();
 
   if(text.length>0){
-    supabaseClient
+    const { error } = await supabaseClient
       .from("daily_logs")
       .upsert({
         user_id: currentSession.user.id,
         entry_date: today,
         text: text,
         updated_at: new Date().toISOString()
-      }, { onConflict: "user_id,entry_date" })
-      .then(({ error })=>{
-        if(error){
-          alert("Could not save the weekly review. Please try again.");
-          return;
-        }
-        localStorage.setItem(reflectionKey,text);
-        const log=loadReflectionLog();
-        log[today]=text;
-        saveReflectionLog(log);
-        renderText("reflection-status","Saved to weekly review log.");
-        renderDailyLog();
-      });
+      }, { onConflict: "user_id,entry_date" });
+
+    if(error){
+      alert("Could not save the weekly review. Please try again.");
+      return;
+    }
+
+    localStorage.setItem(reflectionKey,text);
+    const log=loadReflectionLog();
+    log[today]=text;
+    saveReflectionLog(log);
   } else {
-    supabaseClient
+    await supabaseClient
       .from("daily_logs")
       .delete()
       .eq("user_id", currentSession.user.id)
-      .eq("entry_date", today)
-      .then(()=>{
-        localStorage.removeItem(reflectionKey);
-        const log=loadReflectionLog();
-        delete log[today];
-        saveReflectionLog(log);
-        renderText("reflection-status","No weekly review yet.");
-        renderDailyLog();
-      });
+      .eq("entry_date", today);
+
+    localStorage.removeItem(reflectionKey);
+    const log=loadReflectionLog();
+    delete log[today];
+    saveReflectionLog(log);
   }
 
   winField.value=winText;
   frictionField.value=frictionText;
   nextField.value=nextText;
+  renderText("reflection-status", text.length>0?"Saved to weekly review log.":"No weekly review yet.");
+  renderDailyLog();
 }
 function loadReflection(){
-  const text=cleanInput(localStorage.getItem(reflectionKey)||"",520);
+  const text=String(localStorage.getItem(reflectionKey)||"");
   const parsed=parseReflectionPayload(text);
   const winField=document.getElementById("reflection-win");
   const frictionField=document.getElementById("reflection-friction");
@@ -648,7 +651,7 @@ function loadReflection(){
 function renderDailyLog(){
   const wrap=document.getElementById("daily-log-list"), log=loadReflectionLog();
   const entries=Object.entries(log).filter(([_,v])=>String(v||"").trim().length>0).sort((a,b)=>a[0]<b[0]?1:-1).slice(0,5);
-  if(!entries.length){wrap.innerHTML='<div class="empty"></div>'; return;}
+  if(!entries.length){wrap.innerHTML='<div class="empty">No weekly review yet.</div>'; return;}
   wrap.innerHTML=entries.map(([date,text])=>{
     const parsed=parseReflectionPayload(text);
     const sections=[];

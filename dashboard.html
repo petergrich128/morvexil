@@ -167,7 +167,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
         <label for="task-input">Next priority</label>
         <input id="task-input" type="text" placeholder="One priority for this week" />
       </div>
-      <div class="actions"><button id="task-add-btn" type="button" class="gold-btn" onclick="addTask()">Add priority</button></div>
+      <div class="actions"><button class="gold-btn" onclick="addTask()">Add priority</button></div>
       <div class="small" id="task-cap-note"></div>
       <div class="task-list" id="task-list"></div>
     </div>
@@ -460,7 +460,6 @@ async function addTask(){
     return;
   }
 
-  // Local-first add so the button always works immediately
   const tempId="local_"+Date.now();
   const nextTask={id:tempId,text:text,done:false};
   dbTasks=[...tasks,nextTask];
@@ -470,7 +469,6 @@ async function addTask(){
   renderTasks();
   input.focus();
 
-  // Best-effort database sync
   if(!currentSession){
     if(note) note.textContent="Saved locally. Refresh login later to sync.";
     return;
@@ -568,9 +566,7 @@ async function buildReflectionPayload(winText,frictionText,nextText){
   if(winText) parts.push("WIN: "+winText);
   if(frictionText) parts.push("FRICTION: "+frictionText);
   if(nextText) parts.push("NEXT: "+nextText);
-  return parts.join("
-
-");
+  return parts.join("\n\n");
 }
 function parseReflectionPayload(text){
   const raw=String(text||"");

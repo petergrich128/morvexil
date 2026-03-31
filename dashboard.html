@@ -77,7 +77,6 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
     <div class="brand"><div class="mark"></div><div class="brand-name">Morvexil</div></div>
     <div class="top-actions">
       <a class="ghost-btn" href="index.html">Back to Morvexil</a>
-        <a class="ghost-btn" href="auth.html">Login</a>
         <button class="ghost-btn" onclick="logoutMorvexil()">Logout</button>
       <button class="ghost-btn" onclick="resetTasks()">Clear tasks</button>
       <button class="danger-btn" onclick="resetCycle()">Redefine cycle</button>
@@ -167,7 +166,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
         <label for="task-input">Next priority</label>
         <input id="task-input" type="text" placeholder="One priority for this week" />
       </div>
-      <div class="actions"><button class="gold-btn" onclick="addTask()">Add priority</button></div>
+      <div class="actions"><button id="task-add-btn" type="button" class="gold-btn" onclick="addTask()">Add priority</button></div>
       <div class="small" id="task-cap-note"></div>
       <div class="task-list" id="task-list"></div>
     </div>
@@ -196,7 +195,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
         </div>
         <div class="actions"><button class="gold-btn" onclick="saveReflection()">Save weekly review</button></div>
         <div class="small" id="reflection-status">No weekly review yet.</div>
-        <div class="log-list" id="daily-log-list"><div class="empty"></div></div>
+        <div class="log-list" id="daily-log-list"><div class="empty">No weekly review yet.</div></div>
       </div>
     </div>
   </section>
@@ -248,14 +247,13 @@ async function requireMorvexilAuth(){
   }
 
   const session = data.session;
-
   const { data: profileData, error: profileError } = await supabaseClient
     .from("profiles")
     .select("paid")
     .eq("id", session.user.id)
     .single();
 
-  if(profileError || !profileData || profileData.paid !== true){
+  if(profileError || !profileData || !profileData.paid){
     window.location.href = "index.html";
     return null;
   }
@@ -322,7 +320,7 @@ function loadReflectionLog(){
 function saveReflectionLog(log){
   const obj=safeObject(log), safeLog={};
   Object.keys(obj).sort().slice(-30).forEach(key=>{
-    const cleaned=cleanInput(obj[key],520);
+    const cleaned=cleanInput(obj[key],160);
     if(cleaned) safeLog[key]=cleaned;
   });
   dbReflectionLog=safeLog;
@@ -353,7 +351,7 @@ async function loadDashboardCoreFromDatabase(userId){
   const safeLog={};
   safeArray(logs).forEach(row=>{
     const key=String(row.entry_date||"");
-    const cleaned=cleanInput(row.text,520);
+    const cleaned=cleanInput(row.text,160);
     if(key && cleaned) safeLog[key]=cleaned;
   });
   dbReflectionLog=safeLog;
@@ -428,12 +426,12 @@ function renderMomentum(){
   if(total===2) text="Strong progress. One more to close the week.";
   if(total===3) text="All priorities completed. Week executed.";
   renderText("momentum-text", text);
-  }
+}
 function escapeHtml(str){return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");}
 function renderTasks(){
   const tasks=loadTasks(), wrap=document.getElementById("task-list");
   wrap.innerHTML="";
-  document.getElementById("task-cap-note").textContent="";
+  document.getElementById("task-cap-note").textContent="Weekly limit: 3 priorities.";
   if(!tasks.length){
     wrap.innerHTML='<div class="empty">No priorities yet. Add the first concrete move.</div>';
     renderMomentum(); renderProgress(); return;
@@ -563,23 +561,19 @@ async function resetTasks(){
   dbTasks=[];
   localStorage.removeItem(tasksKey);
   renderTasks();
-  renderText("task-cap-note","");
+  renderText("task-cap-note","Weekly limit: 3 priorities.");
 }
 async function buildReflectionPayload(winText,frictionText,nextText){
   const parts=[];
   if(winText) parts.push("WIN: "+winText);
   if(frictionText) parts.push("FRICTION: "+frictionText);
   if(nextText) parts.push("NEXT: "+nextText);
-  return parts.join("
-
-");
+  return parts.join("\n\n");
 }
 function parseReflectionPayload(text){
   const raw=String(text||"");
   const out={win:"",friction:"",next:""};
-  raw.split(/
-
-+/).forEach(part=>{
+  raw.split(/\n\n+/).forEach(part=>{
     if(part.startsWith("WIN: ")) out.win=part.slice(5).trim();
     else if(part.startsWith("FRICTION: ")) out.friction=part.slice(10).trim();
     else if(part.startsWith("NEXT: ")) out.next=part.slice(6).trim();
@@ -661,50 +655,4 @@ function renderDailyLog(){
     return `<div class="log-item"><div class="log-date">${formatEntryDate(date)}</div><div class="log-text">${sections.join("")}</div></div>`;
   }).join("");
 }
-async function resetCycle(){
-  const confirmed=window.confirm("Redefine this 90-day cycle? This will clear the current objective, structure, weekly priorities, and execution log. Continue only if you want to start a new cycle.");
-  if(!confirmed || !currentSession) return;
 
-  try{
-    await supabaseClient.from("weekly_priorities").delete().eq("user_id", currentSession.user.id);
-    await supabaseClient.from("daily_logs").delete().eq("user_id", currentSession.user.id);
-    await supabaseClient.from("cycles").delete().eq("user_id", currentSession.user.id);
-  }catch(e){}
-
-  localStorage.removeItem(stateKey);
-  localStorage.removeItem(tasksKey);
-  localStorage.removeItem(reflectionKey);
-  localStorage.removeItem(reflectionLogKey);
-  localStorage.removeItem(cycleStartKey);
-  localStorage.removeItem(cycleLockedKey);
-  window.location.href="onboarding.html";
-}
-(async function initDashboard(){
-  ensureCycleLocked();
-  const session = await requireMorvexilAuth();
-  if(!session) return;
-  currentSession = session;
-
-  const syncedState = await syncCycleFromDatabase(session.user.id);
-  const state = syncedState || loadState();
-
-  await loadDashboardCoreFromDatabase(session.user.id);
-
-  renderHero(state);
-  renderPillarDetails(state);
-  renderProgress();
-  renderTasks();
-  const taskInput=document.getElementById("task-input");
-  if(taskInput){
-    taskInput.addEventListener("keydown", function(e){
-      if(e.key==="Enter"){
-        e.preventDefault();
-        addTask();
-      }
-    });
-  }
-  loadReflection();
-})();
-</script>
-</body>
-</html>

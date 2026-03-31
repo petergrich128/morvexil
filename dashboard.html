@@ -161,7 +161,8 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
   <section class="bottom-grid">
     <div class="panel card">
       <h2>Weekly execution</h2>
-      <div class="sub">Define up to 3 priorities for the current week. This is the execution container. Do not add more.</div>
+      <div class="sub">Define up to 3 priorities for the current week. This is your execution container. Do not add more than 3 priorities.</div>
+      <div class="small" style="margin-bottom:14px;color:#d7e0ec;">If it doesn’t move the objective, it doesn’t belong here.</div>
       <div class="field">
         <label for="task-input">Add next priority</label>
         <input id="task-input" type="text" placeholder="One priority for this week" />
@@ -173,7 +174,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
 
     <div class="panel card">
       <h2>Execution score</h2>
-      <div class="sub">Score is earned only through completed priorities.</div>
+      <div class="sub">Only completed priorities count.</div>
       <div class="momentum-score" id="momentum-score">0 / 3</div>
       <div class="momentum-bar"><div id="momentum-fill"></div></div>
       <div class="small" id="momentum-text">No priorities completed yet. Start with one concrete move.</div>
@@ -194,8 +195,8 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
           <textarea id="reflection-next" placeholder="Define the single move that matters most next."></textarea>
         </div>
         <div class="actions"><button class="gold-btn" onclick="saveReflection()">Save weekly review</button></div>
-        <div class="small" id="reflection-status">No weekly review saved yet.</div>
-        <div class="log-list" id="daily-log-list"><div class="empty">No weekly reviews recorded yet.</div></div>
+        <div class="small" id="reflection-status">No weekly review yet.</div>
+        <div class="log-list" id="daily-log-list"><div class="empty"></div></div>
       </div>
     </div>
   </section>
@@ -601,7 +602,7 @@ function saveReflection(){
         const log=loadReflectionLog();
         delete log[today];
         saveReflectionLog(log);
-        renderText("reflection-status","No weekly review saved yet.");
+        renderText("reflection-status","No weekly review yet.");
         renderDailyLog();
       });
   }
@@ -619,13 +620,13 @@ function loadReflection(){
   if(winField) winField.value=parsed.win||"";
   if(frictionField) frictionField.value=parsed.friction||"";
   if(nextField) nextField.value=parsed.next||"";
-  renderText("reflection-status", text.length>0?"Saved to weekly review log.":"No weekly review saved yet.");
+  renderText("reflection-status", text.length>0?"Saved to weekly review log.":"No weekly review yet.");
   renderDailyLog();
 }
 function renderDailyLog(){
   const wrap=document.getElementById("daily-log-list"), log=loadReflectionLog();
   const entries=Object.entries(log).filter(([_,v])=>String(v||"").trim().length>0).sort((a,b)=>a[0]<b[0]?1:-1).slice(0,5);
-  if(!entries.length){wrap.innerHTML='<div class="empty">No weekly reviews recorded yet.</div>'; return;}
+  if(!entries.length){wrap.innerHTML='<div class="empty"></div>'; return;}
   wrap.innerHTML=entries.map(([date,text])=>{
     const parsed=parseReflectionPayload(text);
     const sections=[];

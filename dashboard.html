@@ -167,7 +167,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
         <label for="task-input">Next priority</label>
         <input id="task-input" type="text" placeholder="One priority for this week" />
       </div>
-      <div class="actions"><button class="gold-btn" onclick="addTask()">Add priority</button></div>
+      <div class="actions"><button id="task-add-btn" type="button" class="gold-btn" onclick="addTask()">Add priority</button></div>
       <div class="small" id="task-cap-note"></div>
       <div class="task-list" id="task-list"></div>
     </div>
@@ -444,11 +444,29 @@ function renderTasks(){
 }
 async function addTask(){
   const input=document.getElementById("task-input");
-  if(!input || !currentSession) return;
+  const note=document.getElementById("task-cap-note");
+  if(!input){
+    return;
+  }
+  if(!currentSession){
+    if(note) note.textContent="Session not ready. Refresh and try again.";
+    return;
+  }
+
   const text=cleanInput(input.value,60);
-  if(!text) return;
+  if(!text){
+    if(note) note.textContent="Enter one concrete priority first.";
+    input.focus();
+    return;
+  }
+
   const tasks=loadTasks();
-  if(tasks.length>=3){renderText("task-cap-note",""); return;}
+  if(tasks.length>=3){
+    if(note) note.textContent="Weekly container full. Complete or delete one priority first.";
+    return;
+  }
+
+  if(note) note.textContent="Saving priority...";
 
   const { data, error } = await supabaseClient
     .from("weekly_priorities")
@@ -462,14 +480,16 @@ async function addTask(){
     .single();
 
   if(error){
-    alert("Could not save the priority. Please try again.");
+    if(note) note.textContent="Could not save the priority. Please try again.";
     return;
   }
 
   dbTasks.push({id:data.id, text:data.text, done:!!data.done});
   saveTasks(dbTasks);
   input.value="";
+  if(note) note.textContent="";
   renderTasks();
+  input.focus();
 }
 async function toggleTask(index){
   if(!currentSession) return;
@@ -669,6 +689,15 @@ async function resetCycle(){
   renderPillarDetails(state);
   renderProgress();
   renderTasks();
+  const taskInput=document.getElementById("task-input");
+  if(taskInput){
+    taskInput.addEventListener("keydown", function(e){
+      if(e.key==="Enter"){
+        e.preventDefault();
+        addTask();
+      }
+    });
+  }
   loadReflection();
 })();
 </script>

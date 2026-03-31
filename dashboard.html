@@ -107,7 +107,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
         <div class="progress-core">
           <div class="ring" id="progress-ring"><div class="ring-center"><div class="ring-day" id="ring-day">1</div><div class="ring-sub">Day of 90</div></div></div>
           <div>
-            <div class="progress-copy" id="progress-copy">Protect the structure. Finish this week’s priorities before expanding scope.</div>
+            <div class="progress-copy" id="progress-copy">No new inputs. Execute only what is locked.</div>
             <div class="small" id="progress-status" style="margin-top:10px;">Status: Cycle active</div>
           </div>
         </div>
@@ -383,7 +383,7 @@ function renderProgress(){
   renderText("days-left", String(daysLeft));
   renderText("progress-weekly", done+" / 3");
 
-  let copy="Protect the structure. Finish this week’s priorities before expanding scope.";
+  let copy="No new inputs. Execute only what is locked.";
   let topline="Stay inside the cycle. Finish this week before expanding the scope.";
   let status="Status: Cycle active";
   let rule="Do not expand scope. Lock the first priority and execute inside the current week.";

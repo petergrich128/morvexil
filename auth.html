@@ -123,7 +123,15 @@
       .intro,.panel{padding:22px}
       .brand-name{font-size:26px}
     }
-  </style>
+  .auth-inline-link{
+  display:inline-block;
+  margin-top:10px;
+  color:var(--muted);
+  font-size:14px;
+  text-decoration:none;
+}
+.auth-inline-link:hover{color:var(--text);}
+</style>
 </head>
 <body>
   <header class="site-header">
@@ -133,7 +141,7 @@
         <span class="brand-name">Morvexil</span>
       </a>
       <nav class="nav-links" aria-label="Primary">
-        <a href="index.html">Back to Morvexil</a>
+        <a href="index.html">Back to site</a>
       </nav>
     </div>
   </header>
@@ -142,29 +150,29 @@
     <div class="container grid">
       <section class="intro">
         <div class="eyebrow">Secure Morvexil Access</div>
-        <h1>Access your execution system.</h1>
-        <p class="lead">Morvexil is not a productivity tool. It is a controlled environment for finishing one objective in 90 days.</p>
+        <h1>Login or create your account.</h1>
+        <p class="lead">This is the secure entry point for Morvexil. Your account will hold your cycle, your pillars, your weekly priorities, and your daily execution log.</p>
 
         <div class="list">
           <div class="item">
             <div class="num">1</div>
             <div>
               <strong>Create your account</strong>
-              <span>Use your primary email. This becomes your execution identity.</span>
+              <span>Use the same email you will use for payment and product access.</span>
             </div>
           </div>
           <div class="item">
             <div class="num">2</div>
             <div>
-              <strong>Confirm access</strong>
-              <span>Secure your entry and unlock your personal cycle.</span>
+              <strong>Confirm your email</strong>
+              <span>Supabase can send a confirmation email depending on auth settings.</span>
             </div>
           </div>
           <div class="item">
             <div class="num">3</div>
             <div>
               <strong>Enter Morvexil</strong>
-              <span>Start your 90-day execution immediately.</span>
+              <span>After login, you will be sent to onboarding first, then to the dashboard.</span>
             </div>
           </div>
         </div>
@@ -172,7 +180,7 @@
 
       <section class="panel">
         <div class="tab-row">
-          <button id="loginTab" class="tab active" type="button">Login</button>
+          <button id="loginTab" class="tab active" type="button">Sign in</button>
           <button id="signupTab" class="tab" type="button">Create account</button>
         </div>
 
@@ -184,11 +192,11 @@
           <input id="loginPassword" type="password" placeholder="Your password" autocomplete="current-password" required />
 
           <div class="actions">
-            <button class="btn btn-primary" type="submit">Login</button>
+            <button class="btn btn-primary" type="submit">Sign in</button>
             <button id="resetPasswordBtn" class="btn btn-secondary" type="button">Send password reset email</button>
           </div>
 
-          <p class="hint">Continue your 90-day cycle.</p>
+          <p class="hint">After login, Morvexil sends you to onboarding.</p>
         </form>
 
         <form id="signupForm" class="form">
@@ -207,7 +215,7 @@
 
         <div id="message" class="message info"></div>
 
-        
+        <p class="footer-note">Next secure step: onboarding and dashboard will be protected behind this account layer.</p>
       </section>
     </div>
   </main>
@@ -223,21 +231,6 @@
     const loginForm = document.getElementById("loginForm");
     const signupForm = document.getElementById("signupForm");
     const messageEl = document.getElementById("message");
-
-    async function resolveDestination(){
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) return "auth.html";
-
-      const { data, error } = await supabaseClient
-        .from("cycles")
-        .select("onboarding_completed")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-
-      if (error || !data || !data.onboarding_completed) return "onboarding.html";
-      return "dashboard.html";
-    }
-
 
     function setMode(mode){
       const loginActive = mode === "login";
@@ -280,10 +273,9 @@
         return;
       }
 
-      const nextUrl = await resolveDestination();
-      showMessage("Login successful. Redirecting...", "success");
+      showMessage("Login successful. Redirecting to onboarding...", "success");
       setTimeout(() => {
-        window.location.href = nextUrl;
+        window.location.href = "onboarding.html";
       }, 700);
     });
 
@@ -335,10 +327,9 @@
     (async function checkSession(){
       const { data } = await supabaseClient.auth.getSession();
       if (data && data.session) {
-        const nextUrl = await resolveDestination();
         showMessage("You are already logged in. Redirecting...", "success");
         setTimeout(() => {
-          window.location.href = nextUrl;
+          window.location.href = "onboarding.html";
         }, 500);
       }
     })();

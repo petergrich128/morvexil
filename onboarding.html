@@ -14,8 +14,73 @@ h1{font-size:36px;margin-bottom:10px}
 .desc{font-size:14px;color:#aaa;margin-bottom:10px}
 input{width:100%;padding:14px;border-radius:12px;border:1px solid #333;background:#0f141a;color:#fff}
 button{margin-top:20px;padding:14px 20px;border-radius:999px;border:none;background:linear-gradient(180deg,#f0d29a,#d9b26c);color:#111;font-weight:700;cursor:pointer}
+
+.overlay-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(7,10,15,.72);
+  backdrop-filter:blur(10px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  padding:24px;
+}
+.overlay-backdrop.show{display:flex;}
+.overlay-card{
+  width:min(520px, calc(100% - 32px));
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(17,25,36,.88);
+  border-radius:28px;
+  box-shadow:0 20px 60px rgba(0,0,0,.42);
+  padding:32px 28px;
+  text-align:center;
+}
+.overlay-title{
+  margin:0 0 10px;
+  font-size:clamp(28px, 4vw, 40px);
+  line-height:1.05;
+  letter-spacing:-.03em;
+}
+.overlay-copy{
+  margin:0 0 22px;
+  color:#d7e0ec;
+  font-size:16px;
+}
+.overlay-actions{
+  display:flex;
+  justify-content:center;
+}
+.overlay-actions .btn{
+  min-width:220px;
+}
+
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    let overlayRedirectTimer = null;
+
+    function showCycleLockedOverlay(){
+      const overlay = document.getElementById("cycleLockedOverlay");
+      const enterBtn = document.getElementById("enterDashboardBtn");
+      if(!overlay || !enterBtn){
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      overlay.classList.add("show");
+      overlay.setAttribute("aria-hidden", "false");
+
+      const goToDashboard = () => {
+        window.location.href = "dashboard.html";
+      };
+
+      enterBtn.onclick = goToDashboard;
+
+      if (overlayRedirectTimer) clearTimeout(overlayRedirectTimer);
+      overlayRedirectTimer = setTimeout(goToDashboard, 1400);
+    }
+
+</script>
 <script>
 const SUPABASE_URL = "https://gdjbwryoihbticuliwol.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkamJ3cnlvaWhidGljdWxpd29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NTA1MDMsImV4cCI6MjA5MDMyNjUwM30.21iafDk567oQSX7abwuU4lYZIvdsnQWpnZifK5ODmPU";
@@ -86,7 +151,7 @@ async function save() {
     return;
   }
 
-  window.location.href = "dashboard.html";
+  showCycleLockedOverlay();
 }
 
 (async function initOnboarding() {
@@ -101,7 +166,7 @@ async function save() {
 
   if (!error && data) {
     if (data.onboarding_completed) {
-      window.location.href = "dashboard.html";
+      showCycleLockedOverlay();
       return;
     }
 
@@ -148,5 +213,16 @@ async function save() {
 
 <button onclick="save()">Lock the cycle</button>
 </div>
+
+  <div id="cycleLockedOverlay" class="overlay-backdrop" aria-hidden="true">
+    <div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+      <h2 id="overlayTitle" class="overlay-title">Cycle locked.</h2>
+      <p class="overlay-copy">Execution starts now.</p>
+      <div class="overlay-actions">
+        <button id="enterDashboardBtn" class="btn btn-primary" type="button">Enter dashboard</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

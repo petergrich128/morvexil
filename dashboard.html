@@ -165,7 +165,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
       <div class="small" style="margin-bottom:14px;color:#d7e0ec;">If it doesn’t move the objective, it doesn’t belong.</div>
       <div class="field">
         <label for="task-input">Next priority</label>
-        <input id="task-input" type="text" placeholder="One priority for this week" />
+        <input id="task-input" type="text" placeholder="One priority for this week" maxlength="70" />
       </div>
       <div class="actions"><button class="gold-btn" onclick="addTask()">Add priority</button></div>
       <div class="small" id="task-cap-note"></div>
@@ -174,7 +174,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
 
     <div class="panel card">
       <h2>Execution score</h2>
-      <div class="sub">Only completed priorities count.</div>
+      <div class="sub">Only completed priorities count</div>
       <div class="momentum-score" id="momentum-score">0 / 3</div>
       <div class="momentum-bar"><div id="momentum-fill"></div></div>
       <div class="small" id="momentum-text">No priorities completed yet. Start with one concrete move.</div>
@@ -195,7 +195,6 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
           <textarea id="reflection-next" placeholder="Define the single move that matters most next."></textarea>
         </div>
         <div class="actions"><button class="gold-btn" onclick="saveReflection()">Lock weekly review</button></div>
-        <div class="small" id="reflection-status">Not saved yet</div>
         <div class="log-list" id="daily-log-list"><div class="empty">No weekly review yet.</div></div>
       </div>
     </div>
@@ -451,7 +450,7 @@ async function addTask(){
   const note=document.getElementById("task-cap-note");
   if(!input) return;
 
-  const text=cleanInput(input.value,60);
+  const text=cleanInput(input.value,70);
   if(!text){
     if(note) note.textContent="Enter one concrete priority first.";
     input.focus();
@@ -629,8 +628,7 @@ async function saveReflection(){
   winField.value=winText;
   frictionField.value=frictionText;
   nextField.value=nextText;
-  renderText("reflection-status", text.length>0?"Saved to weekly review log.":"No weekly review yet.");
-  renderDailyLog();
+renderDailyLog();
 }
 function loadReflection(){
   const text=String(localStorage.getItem(reflectionKey)||"");
@@ -641,8 +639,7 @@ function loadReflection(){
   if(winField) winField.value=parsed.win||"";
   if(frictionField) frictionField.value=parsed.friction||"";
   if(nextField) nextField.value=parsed.next||"";
-  renderText("reflection-status", text.length>0?"Saved to weekly review log.":"No weekly review yet.");
-  renderDailyLog();
+renderDailyLog();
 }
 function renderDailyLog(){
   const wrap=document.getElementById("daily-log-list"), log=loadReflectionLog();

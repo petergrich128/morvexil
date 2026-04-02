@@ -56,30 +56,30 @@ button{margin-top:20px;padding:14px 20px;border-radius:999px;border:none;backgro
 }
 
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-    let overlayRedirectTimer = null;
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+let overlayRedirectTimer = null;
 
-    function showCycleLockedOverlay(){
-      const overlay = document.getElementById("cycleLockedOverlay");
-      const enterBtn = document.getElementById("enterDashboardBtn");
-      if(!overlay || !enterBtn){
-        window.location.href = "dashboard.html";
-        return;
-      }
+function showCycleLockedOverlay(){
+  const overlay = document.getElementById("cycleLockedOverlay");
+  const enterBtn = document.getElementById("enterDashboardBtn");
+  if(!overlay || !enterBtn){
+    window.location.href = "dashboard.html";
+    return;
+  }
 
-      overlay.classList.add("show");
-      overlay.setAttribute("aria-hidden", "false");
+  overlay.classList.add("show");
+  overlay.setAttribute("aria-hidden", "false");
 
-      const goToDashboard = () => {
-        window.location.href = "dashboard.html";
-      };
+  const goToDashboard = () => {
+    window.location.href = "dashboard.html";
+  };
 
-      enterBtn.onclick = goToDashboard;
+  enterBtn.onclick = goToDashboard;
 
-      if (overlayRedirectTimer) clearTimeout(overlayRedirectTimer);
-      overlayRedirectTimer = setTimeout(goToDashboard, 1400);
-    }
-
+  if (overlayRedirectTimer) clearTimeout(overlayRedirectTimer);
+  overlayRedirectTimer = setTimeout(goToDashboard, 1400);
+}
 </script>
 <script>
 const SUPABASE_URL = "https://gdjbwryoihbticuliwol.supabase.co";

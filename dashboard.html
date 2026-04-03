@@ -80,7 +80,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
         <a class="ghost-btn" href="auth.html">Login</a>
         <button class="ghost-btn" onclick="logoutMorvexil()">Logout</button>
       <button class="ghost-btn" onclick="resetTasks()">Clear tasks</button>
-      <button class="danger-btn" onclick="resetCycle()">Redefine cycle</button>
+      <button class="danger-btn" onclick="resetCycle()">Redefine execution</button>
     </div>
   </div>
 
@@ -97,23 +97,23 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
       <div class="lock-card">
         <div class="identity-note">System logic</div>
         <div class="lock-head"><span>Morvexil protocol</span><span class="lock-pill">90-day commitment</span></div>
-        <div class="lock-copy">The structure is fixed on purpose. Do not renegotiate the objective when friction appears. Protect the cycle, finish the priorities, and let execution speak.</div>
+        <div class="lock-copy">The structure is fixed on purpose. Do not renegotiate the objective when friction appears. Protect the execution, finish the priorities, and let execution speak.</div>
       </div>
     </div>
     <div class="hero-right">
       <div class="progress-card">
-        <div class="progress-title">Cycle progress</div>
-        <div class="progress-topline" id="progress-topline">Stay inside the cycle. Finish this week before expanding the scope.</div>
+        <div class="progress-title">Execution progress</div>
+        <div class="progress-topline" id="progress-topline">Stay inside the execution. Finish this week before expanding the scope.</div>
         <div class="progress-core">
           <div class="ring" id="progress-ring"><div class="ring-center"><div class="ring-day" id="ring-day">1</div><div class="ring-sub">Day of 90</div></div></div>
           <div>
             <div class="progress-copy" id="progress-copy">No new inputs. Execute only what is locked.</div>
-            <div class="small" id="progress-status" style="margin-top:10px;">Status: Cycle active</div>
+            <div class="small" id="progress-status" style="margin-top:10px;">Status: Execution active</div>
           </div>
         </div>
         <div class="progress-meta">
           <div class="progress-stat">
-            <span class="progress-stat-label">Cycle completion</span>
+            <span class="progress-stat-label">Execution completion</span>
             <span class="progress-stat-value" id="cycle-percent">1%</span>
           </div>
           <div class="progress-stat">
@@ -140,21 +140,21 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
       <div class="pillar-name">Product</div>
       <div class="pillar-framework">Build the core asset that makes this objective real.</div>
       <div class="pillar-detail" id="product-detail">Define what you are building.</div>
-      <div class="pillar-foot">Locked to the current 90-day cycle</div>
+      <div class="pillar-foot">Locked to the current 90-day execution</div>
     </article>
     <article class="panel pillar-card">
       <div class="pillar-top"><div class="pillar-num">2</div></div>
       <div class="pillar-name">Distribution</div>
       <div class="pillar-framework">Create consistent reach so the right people repeatedly see the work.</div>
       <div class="pillar-detail" id="distribution-detail">Define how people will see your work.</div>
-      <div class="pillar-foot">Locked to the current 90-day cycle</div>
+      <div class="pillar-foot">Locked to the current 90-day execution</div>
     </article>
     <article class="panel pillar-card">
       <div class="pillar-top"><div class="pillar-num">3</div></div>
       <div class="pillar-name">Sales</div>
       <div class="pillar-framework">Convert attention into revenue through direct asks, offers, and follow-up.</div>
       <div class="pillar-detail" id="sales-detail">Define how you convert attention into revenue.</div>
-      <div class="pillar-foot">Locked to the current 90-day cycle</div>
+      <div class="pillar-foot">Locked to the current 90-day execution</div>
     </article>
   </section>
 
@@ -389,8 +389,8 @@ function renderProgress(){
   renderText("progress-weekly", done+" / 3");
 
   let copy="No new inputs. Execute only what is locked.";
-  let topline="Stay inside the cycle. Finish this week before expanding the scope.";
-  let status="Status: Cycle active";
+  let topline="Stay inside the execution. Finish this week before expanding the scope.";
+  let status="Status: Execution active";
   let rule="Do not expand scope. Lock the first priority and execute inside the current week.";
 
   if(done===1){
@@ -655,7 +655,7 @@ function renderDailyLog(){
   }).join("");
 }
 async function resetCycle(){
-  const confirmed=window.confirm("Redefine this 90-day cycle? This will clear the current objective, structure, weekly priorities, and execution log. Continue only if you want to start a new cycle.");
+  const confirmed=window.confirm("Redefine this 90-day execution? This will clear the current objective, structure, weekly priorities, and execution log. Continue only if you want to start a new execution.");
   if(!confirmed || !currentSession) return;
 
   try{

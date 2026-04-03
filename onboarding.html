@@ -184,8 +184,8 @@ async function save() {
      onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">← Back to Morvexil</a> <a href="auth.html" style="margin-left:16px;color:#aaa;text-decoration:none;font-size:14px;transition:0.2s;font-family: Inter, sans-serif;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'"> <a href="#" onclick="logoutMorvexil()" style="color:#aaa;font-size:14px;text-decoration:none;transition:0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#aaa'">Logout</a>
 </div>
 <div class="container">
-<h1>Define your 90-day cycle</h1>
-<div class="sub">This is where your cycle is defined. Once locked, you execute inside it.</div>
+<h1>Define your 90-day execution</h1>
+<div class="sub">This is where your execution is defined. Once locked, you execute inside it.</div>
 
 <div class="card">
   <div class="label">Objective</div>
@@ -195,7 +195,7 @@ async function save() {
 
 <div class="card">
   <div class="label">Product</div>
-  <div class="desc">What are you building in this cycle?</div>
+  <div class="desc">What are you building in this execution?</div>
   <input id="product" maxlength="40" placeholder="Example: Core offer, landing page, and delivery system">
 </div>
 
@@ -211,12 +211,12 @@ async function save() {
   <input id="sales" maxlength="40" placeholder="Example: Discovery calls, follow-up, and conversion flow">
 </div>
 
-<button onclick="save()">Lock the cycle</button>
+<button onclick="save()">Lock the execution</button>
 </div>
 
   <div id="cycleLockedOverlay" class="overlay-backdrop" aria-hidden="true">
     <div class="overlay-card" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
-      <h2 id="overlayTitle" class="overlay-title">Cycle locked.</h2>
+      <h2 id="overlayTitle" class="overlay-title">Execution locked.</h2>
       <p class="overlay-copy">Execution starts now.</p>
       <div class="overlay-actions">
         <button id="enterDashboardBtn" class="btn btn-primary" type="button">Enter dashboard</button>

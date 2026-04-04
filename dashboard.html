@@ -308,14 +308,14 @@ async function logoutMorvexil(){
 function loadTasks(){
   return safeArray(dbTasks).slice(0,3).map(task=>({
     id:safeObject(task).id||null,
-    text:cleanInput(safeObject(task).text,60),
+    text:cleanInput(safeObject(task).text,70),
     done:!!safeObject(task).done
   })).filter(task=>task.text.length>0);
 }
 function saveTasks(tasks){
   const safeTasks=safeArray(tasks).slice(0,3).map(task=>({
     id:safeObject(task).id||null,
-    text:cleanInput(safeObject(task).text,60),
+    text:cleanInput(safeObject(task).text,70),
     done:!!safeObject(task).done
   })).filter(task=>task.text.length>0);
   dbTasks=safeTasks;
@@ -342,7 +342,7 @@ async function loadDashboardCoreFromDatabase(userId){
 
   dbTasks = safeArray(priorities).slice(0,3).map(row=>({
     id: row.id,
-    text: cleanInput(row.text,60),
+    text: cleanInput(row.text,70),
     done: !!row.done
   }));
   localStorage.setItem(tasksKey, JSON.stringify(dbTasks.map(({text,done})=>({text,done}))));
@@ -593,9 +593,9 @@ async function saveReflection(){
   const nextField=document.getElementById("reflection-next");
   if(!winField || !frictionField || !nextField || !currentSession) return;
 
-  const winText=cleanInput(winField.value,160);
-  const frictionText=cleanInput(frictionField.value,160);
-  const nextText=cleanInput(nextField.value,160);
+  const winText=cleanInput(winField.value,120);
+  const frictionText=cleanInput(frictionField.value,120);
+  const nextText=cleanInput(nextField.value,120);
   const text=buildReflectionPayload(winText,frictionText,nextText);
   const today=getTodayKey();
 

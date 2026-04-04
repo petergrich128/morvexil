@@ -57,7 +57,7 @@ a{color:inherit;text-decoration:none}.shell{width:min(100% - 32px,1320px);margin
 .bottom-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.card{padding:24px}.card h2{margin:0 0 8px;font-size:26px;line-height:1.05;letter-spacing:-.02em}.sub{color:var(--muted);font-size:16px;line-height:1.45;margin-bottom:18px}
 .field{margin-top:16px} label{display:block;margin-bottom:10px;font-size:14px;color:#e6edf7;font-weight:700}
 input,textarea{width:100%;min-height:58px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--text);padding:16px 18px;outline:none;font:inherit;font-size:14px}
-textarea{min-height:92px;resize:vertical} #task-input{min-height:76px} input::placeholder,textarea::placeholder{font-size:13px;opacity:.6;color:#8f9db0}
+textarea{min-height:92px;resize:vertical} input::placeholder,textarea::placeholder{font-size:13px;opacity:.6;color:#8f9db0}
 .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}.task-list{display:grid;gap:10px;margin-top:18px}
 .task{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:start;padding:14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid var(--line);min-height:unset}
 .check{width:22px;height:22px;border-radius:50%;border:1px solid rgba(217,178,108,.28);background:rgba(217,178,108,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;margin-top:2px}
@@ -162,12 +162,11 @@ textarea{min-height:92px;resize:vertical} #task-input{min-height:76px} input::pl
     <div class="panel card">
       <h2>Weekly execution</h2>
       <div class="sub">Define up to 3 priorities for this week. This is your execution container.</div>
-      <div class="small" style="margin-bottom:14px;color:#d7e0ec;">If it doesn’t directly move the objective forward, don’t add it.</div>
+      <div class="small" style="margin-bottom:14px;color:#d7e0ec;">If it doesn’t move the objective, it doesn’t belong.</div>
       <div class="field">
         <label for="task-input">Next priority</label>
-        <textarea id="task-input" placeholder="One priority for this week" maxlength="100"></textarea>
+        <input id="task-input" type="text" placeholder="One priority for this week" maxlength="70" />
       </div>
-      <div class="small" id="task-hint" style="margin-top:8px;color:#d7e0ec;"></div>
       <div class="actions"><button class="gold-btn" onclick="addTask()">Add priority</button></div>
       <div class="small" id="task-cap-note"></div>
       <div class="task-list" id="task-list"></div>
@@ -190,16 +189,16 @@ textarea{min-height:92px;resize:vertical} #task-input{min-height:76px} input::pl
         <label for="reflection-win">Guided weekly review</label>
         <div class="small" style="margin-bottom:12px;">Close the week with clarity before starting the next one.</div>
         <div class="field">
-          <label for="reflection-win">1. What moved the objective forward this week?</label>
-          <textarea id="reflection-win" placeholder="Record the concrete move, result, or proof of progress." maxlength="120"></textarea>
+          <label for="reflection-win">1. What specific action or result moved the objective forward this week?</label>
+          <textarea id="reflection-win" placeholder="Record the concrete action or measurable result." maxlength="120"></textarea>
         </div>
         <div class="field">
-          <label for="reflection-friction">2. What created friction or slowed execution?</label>
-          <textarea id="reflection-friction" placeholder="Name the bottleneck, distraction, or miss." maxlength="120"></textarea>
+          <label for="reflection-friction">2. What specifically slowed you down or blocked execution?</label>
+          <textarea id="reflection-friction" placeholder="Name the exact blocker or mistake." maxlength="120"></textarea>
         </div>
         <div class="field">
-          <label for="reflection-next">3. What is the 1 highest-leverage priority next week?</label>
-          <textarea id="reflection-next" placeholder="Define the single move that matters most next." maxlength="120"></textarea>
+          <label for="reflection-next">3. What is the one concrete action that will move the objective forward next week?</label>
+          <textarea id="reflection-next" placeholder="Define one specific action (clear and executable)." maxlength="120"></textarea>
         </div>
         <div class="actions"><button class="gold-btn" onclick="saveReflection()">Lock weekly review</button></div>
         <div class="log-list" id="daily-log-list"><div class="empty">No weekly review yet.</div></div>
@@ -309,14 +308,14 @@ async function logoutMorvexil(){
 function loadTasks(){
   return safeArray(dbTasks).slice(0,3).map(task=>({
     id:safeObject(task).id||null,
-    text:cleanInput(safeObject(task).text,100),
+    text:cleanInput(safeObject(task).text,70),
     done:!!safeObject(task).done
   })).filter(task=>task.text.length>0);
 }
 function saveTasks(tasks){
   const safeTasks=safeArray(tasks).slice(0,3).map(task=>({
     id:safeObject(task).id||null,
-    text:cleanInput(safeObject(task).text,100),
+    text:cleanInput(safeObject(task).text,70),
     done:!!safeObject(task).done
   })).filter(task=>task.text.length>0);
   dbTasks=safeTasks;
@@ -343,7 +342,7 @@ async function loadDashboardCoreFromDatabase(userId){
 
   dbTasks = safeArray(priorities).slice(0,3).map(row=>({
     id: row.id,
-    text: cleanInput(row.text,100),
+    text: cleanInput(row.text,70),
     done: !!row.done
   }));
   localStorage.setItem(tasksKey, JSON.stringify(dbTasks.map(({text,done})=>({text,done}))));
@@ -452,43 +451,12 @@ function renderTasks(){
   });
   renderMomentum(); renderProgress();
 }
-
-function updateTaskHint(value){
-  const hintEl = document.getElementById("task-hint");
-  if(!hintEl) return;
-
-  const text = value.toLowerCase();
-
-  if(!text){
-    hintEl.textContent = "";
-    return;
-  }
-
-  if(text.length < 10){
-    hintEl.textContent = "Too vague. Make it more specific.";
-    return;
-  }
-
-  if(text.includes("research") || text.includes("marketing") || text.includes("work on") || text.includes("improve")){
-    hintEl.textContent = "Too broad. Write the exact move.";
-    return;
-  }
-
-  if(text.split(" ").length > 12){
-    hintEl.textContent = "Too long. Keep it to one clear move.";
-    return;
-  }
-
-  hintEl.textContent = "Good. Clear and actionable.";
-}
-
-
 async function addTask(){
   const input=document.getElementById("task-input");
   const note=document.getElementById("task-cap-note");
   if(!input) return;
 
-  const text=cleanInput(input.value,100);
+  const text=cleanInput(input.value,70);
   if(!text){
     if(note) note.textContent="Enter one concrete priority first.";
     input.focus();
@@ -727,11 +695,11 @@ async function resetCycle(){
   renderTasks();
   const taskInput=document.getElementById("task-input");
   if(taskInput){
-    taskInput.addEventListener("input", function(){
-      if(taskInput.value.length > 100){
-        taskInput.value = taskInput.value.slice(0,100);
+    taskInput.addEventListener("keydown", function(e){
+      if(e.key==="Enter"){
+        e.preventDefault();
+        addTask();
       }
-      updateTaskHint(taskInput.value);
     });
   }
   loadReflection();

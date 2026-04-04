@@ -134,7 +134,6 @@ textarea{min-height:92px;resize:vertical} input::placeholder,textarea::placehold
     </div>
   </section>
 
-  <div class="small" style="margin-bottom:14px;color:#d7e0ec;">These three pillars define where execution happens. If a task doesn’t belong to one of them, it doesn’t belong in the system.</div>
   <section class="pillars-grid">
     <article class="panel pillar-card">
       <div class="pillar-top"><div class="pillar-num">1</div></div>
@@ -309,18 +308,18 @@ async function logoutMorvexil(){
 function loadTasks(){
   return safeArray(dbTasks).slice(0,3).map(task=>({
     id:safeObject(task).id||null,
-    text:cleanInput(safeObject(task).text,70),
+    text:cleanInput(safeObject(task).text,100), pillar: cleanInput(safeObject(task).pillar || "Product",20),
     done:!!safeObject(task).done
   })).filter(task=>task.text.length>0);
 }
 function saveTasks(tasks){
   const safeTasks=safeArray(tasks).slice(0,3).map(task=>({
     id:safeObject(task).id||null,
-    text:cleanInput(safeObject(task).text,70),
+    text:cleanInput(safeObject(task).text,100), pillar: cleanInput(safeObject(task).pillar || "Product",20),
     done:!!safeObject(task).done
   })).filter(task=>task.text.length>0);
   dbTasks=safeTasks;
-  localStorage.setItem(tasksKey,JSON.stringify(safeTasks.map(({text,done})=>({text,done}))));
+  localStorage.setItem(tasksKey,JSON.stringify(safeTasks.map(({text,done,pillar})=>({text,done,pillar}))));
 }
 function loadReflectionLog(){
   return safeObject(dbReflectionLog);
@@ -343,7 +342,7 @@ async function loadDashboardCoreFromDatabase(userId){
 
   dbTasks = safeArray(priorities).slice(0,3).map(row=>({
     id: row.id,
-    text: cleanInput(row.text,70),
+    text: cleanInput(row.text,100), pillar: "Product",
     done: !!row.done
   }));
   localStorage.setItem(tasksKey, JSON.stringify(dbTasks.map(({text,done})=>({text,done}))));
@@ -452,12 +451,43 @@ function renderTasks(){
   });
   renderMomentum(); renderProgress();
 }
+
+function updateTaskHint(value){
+  const hintEl = document.getElementById("task-hint");
+  if(!hintEl) return;
+
+  const text = String(value || "").trim().toLowerCase();
+
+  if(!text){
+    hintEl.textContent = "";
+    return;
+  }
+
+  if(text.length < 10){
+    hintEl.textContent = "Too vague. Make it more specific.";
+    return;
+  }
+
+  if(text.includes("research") || text.includes("marketing") || text.includes("work on") || text.includes("improve")){
+    hintEl.textContent = "Too broad. Write the exact move.";
+    return;
+  }
+
+  if(text.split(/\s+/).length > 12){
+    hintEl.textContent = "Too long. Keep it to one clear move.";
+    return;
+  }
+
+  hintEl.textContent = "Good. Clear and actionable.";
+}
+
 async function addTask(){
   const input=document.getElementById("task-input");
   const note=document.getElementById("task-cap-note");
   if(!input) return;
 
-  const text=cleanInput(input.value,70);
+  const pillar=(document.getElementById("task-pillar")?.value || "Product");
+  const text=cleanInput(input.value,100);
   if(!text){
     if(note) note.textContent="Enter one concrete priority first.";
     input.focus();
@@ -489,7 +519,6 @@ async function addTask(){
     .insert({
       user_id: currentSession.user.id,
       text: text,
-      pillar: pillar,
       done: false,
       position: tasks.length
     })
@@ -501,7 +530,7 @@ async function addTask(){
     return;
   }
 
-  dbTasks=dbTasks.map(task => task.id===tempId ? {id:data.id, text:data.text, done:!!data.done} : task);
+  dbTasks=dbTasks.map(task => task.id===tempId ? {id:data.id, text:data.text, done:!!data.done, pillar: pillar} : task);
   saveTasks(dbTasks);
   renderTasks();
 }
@@ -533,7 +562,7 @@ async function deleteTask(index){
   if(!task) return;
 
   tasks.splice(index,1);
-  dbTasks = tasks.map((t)=>({id:t.id||null,text:t.text,done:t.done}));
+  dbTasks = tasks.map((t)=>({id:t.id||null,text:t.text,done:t.done,pillar:t.pillar||"Product"}));
   saveTasks(dbTasks);
   renderTasks();
 
@@ -608,7 +637,6 @@ async function saveReflection(){
         user_id: currentSession.user.id,
         entry_date: today,
         text: text,
-      pillar: pillar,
         updated_at: new Date().toISOString()
       }, { onConflict: "user_id,entry_date" });
 
@@ -698,11 +726,11 @@ async function resetCycle(){
   renderTasks();
   const taskInput=document.getElementById("task-input");
   if(taskInput){
-    taskInput.addEventListener("keydown", function(e){
-      if(e.key==="Enter"){
-        e.preventDefault();
-        addTask();
+    taskInput.addEventListener("input", function(){
+      if(taskInput.value.length > 100){
+        taskInput.value = taskInput.value.slice(0,100);
       }
+      updateTaskHint(taskInput.value);
     });
   }
   loadReflection();

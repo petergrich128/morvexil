@@ -447,7 +447,7 @@ function renderTasks(){
   tasks.forEach((task,idx)=>{
     const row=document.createElement("div");
     row.className="task"+(task.done?" done":"");
-    row.innerHTML=`<div class="check" onclick="toggleTask(${idx})">${task.done?"✓":""}</div><div class="task-text">${escapeHtml(task.text)}</div><button class="task-delete" onclick="deleteTask(${idx})">×</button>`;
+    row.innerHTML=`<div class="check" onclick="toggleTask(${idx})">${task.done?"✓":""}</div><div class="task-text">${escapeHtml(task.text)}<div style="font-size:11px;color:#d7e0ec;margin-top:4px;">${escapeHtml(task.pillar || "Product")}</div></div><button class="task-delete" onclick="deleteTask(${idx})">×</button>`;
     wrap.appendChild(row);
   });
   renderMomentum(); renderProgress();
@@ -471,7 +471,7 @@ async function addTask(){
   }
 
   const tempId="local_"+Date.now();
-  const nextTask={id:tempId,text:text,done:false};
+  const nextTask={id:tempId,text:text,done:false,pillar:pillar};
   dbTasks=[...tasks,nextTask];
   saveTasks(dbTasks);
   input.value="";
@@ -489,6 +489,7 @@ async function addTask(){
     .insert({
       user_id: currentSession.user.id,
       text: text,
+      pillar: pillar,
       done: false,
       position: tasks.length
     })
@@ -607,6 +608,7 @@ async function saveReflection(){
         user_id: currentSession.user.id,
         entry_date: today,
         text: text,
+      pillar: pillar,
         updated_at: new Date().toISOString()
       }, { onConflict: "user_id,entry_date" });
 

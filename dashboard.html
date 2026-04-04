@@ -167,6 +167,7 @@ textarea{min-height:92px;resize:vertical} #task-input{min-height:76px} input::pl
         <label for="task-input">Next priority</label>
         <textarea id="task-input" placeholder="One priority for this week" maxlength="100"></textarea>
       </div>
+      <div class="small" id="task-hint" style="margin-top:8px;color:#d7e0ec;"></div>
       <div class="actions"><button class="gold-btn" onclick="addTask()">Add priority</button></div>
       <div class="small" id="task-cap-note"></div>
       <div class="task-list" id="task-list"></div>
@@ -451,6 +452,37 @@ function renderTasks(){
   });
   renderMomentum(); renderProgress();
 }
+
+function updateTaskHint(value){
+  const hintEl = document.getElementById("task-hint");
+  if(!hintEl) return;
+
+  const text = value.toLowerCase();
+
+  if(!text){
+    hintEl.textContent = "";
+    return;
+  }
+
+  if(text.length < 10){
+    hintEl.textContent = "Too vague. Make it more specific.";
+    return;
+  }
+
+  if(text.includes("research") || text.includes("marketing") || text.includes("work on") || text.includes("improve")){
+    hintEl.textContent = "Too broad. Write the exact move.";
+    return;
+  }
+
+  if(text.split(" ").length > 12){
+    hintEl.textContent = "Too long. Keep it to one clear move.";
+    return;
+  }
+
+  hintEl.textContent = "Good. Clear and actionable.";
+}
+
+
 async function addTask(){
   const input=document.getElementById("task-input");
   const note=document.getElementById("task-cap-note");
@@ -699,6 +731,7 @@ async function resetCycle(){
       if(taskInput.value.length > 100){
         taskInput.value = taskInput.value.slice(0,100);
       }
+      updateTaskHint(taskInput.value);
     });
   }
   loadReflection();

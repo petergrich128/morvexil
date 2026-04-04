@@ -570,7 +570,7 @@ async function resetTasks(){
   renderTasks();
   renderText("task-cap-note","");
 }
-async function buildReflectionPayload(winText,frictionText,nextText){
+function buildReflectionPayload(winText,frictionText,nextText){
   const parts=[];
   if(winText) parts.push("WIN: "+winText);
   if(frictionText) parts.push("FRICTION: "+frictionText);

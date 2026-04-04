@@ -68,7 +68,7 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
 .momentum-bar>div{height:100%;width:0%;background:linear-gradient(90deg,var(--gold2),var(--gold))}
 .reflection-box{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}.small{font-size:14px;color:var(--muted)}
 .log-list{display:grid;gap:10px;margin-top:16px}.log-item{padding:14px 16px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.10)}
-.log-date{font-size:11px;color:var(--gold2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:800}.log-text{font-size:15px;color:#eef4fb;line-height:1.55;white-space:pre-line}.log-section-title{display:block;color:#f0d29a;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:10px 0 4px}
+.log-date{font-size:11px;color:var(--gold2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:800}.log-text{font-size:15px;color:#eef4fb;line-height:1.55;white-space:pre-line;overflow-wrap:anywhere;word-break:break-word}.log-section-title{display:block;color:#f0d29a;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:10px 0 4px}
 </style>
 </head>
 <body>
@@ -190,15 +190,15 @@ textarea{min-height:118px;resize:vertical} input::placeholder,textarea::placehol
         <div class="small" style="margin-bottom:12px;">Close the week with clarity before starting the next one.</div>
         <div class="field">
           <label for="reflection-win">1. What moved the objective forward this week?</label>
-          <textarea id="reflection-win" placeholder="Record the concrete move, result, or proof of progress."></textarea>
+          <textarea id="reflection-win" placeholder="Record the concrete move, result, or proof of progress." maxlength="140"></textarea>
         </div>
         <div class="field">
           <label for="reflection-friction">2. What created friction or slowed execution?</label>
-          <textarea id="reflection-friction" placeholder="Name the bottleneck, distraction, or miss."></textarea>
+          <textarea id="reflection-friction" placeholder="Name the bottleneck, distraction, or miss." maxlength="140"></textarea>
         </div>
         <div class="field">
           <label for="reflection-next">3. What is the 1 highest-leverage priority next week?</label>
-          <textarea id="reflection-next" placeholder="Define the single move that matters most next."></textarea>
+          <textarea id="reflection-next" placeholder="Define the single move that matters most next." maxlength="140"></textarea>
         </div>
         <div class="actions"><button class="gold-btn" onclick="saveReflection()">Lock weekly review</button></div>
         <div class="log-list" id="daily-log-list"><div class="empty">No weekly review yet.</div></div>

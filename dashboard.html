@@ -134,6 +134,7 @@ textarea{min-height:92px;resize:vertical} input::placeholder,textarea::placehold
     </div>
   </section>
 
+  <div class="small" style="margin-bottom:14px;color:#d7e0ec;">These three pillars define where execution happens. If a task doesn’t belong to one of them, it doesn’t belong in the system.</div>
   <section class="pillars-grid">
     <article class="panel pillar-card">
       <div class="pillar-top"><div class="pillar-num">1</div></div>
@@ -189,16 +190,16 @@ textarea{min-height:92px;resize:vertical} input::placeholder,textarea::placehold
         <label for="reflection-win">Guided weekly review</label>
         <div class="small" style="margin-bottom:12px;">Close the week with clarity before starting the next one.</div>
         <div class="field">
-          <label for="reflection-win">1. What specific action or result moved the objective forward this week?</label>
-          <textarea id="reflection-win" placeholder="Record the concrete action or measurable result." maxlength="120"></textarea>
+          <label for="reflection-win">1. What moved the objective forward this week?</label>
+          <textarea id="reflection-win" placeholder="Record the concrete move, result, or proof of progress." maxlength="120"></textarea>
         </div>
         <div class="field">
-          <label for="reflection-friction">2. What specifically slowed you down or blocked execution?</label>
-          <textarea id="reflection-friction" placeholder="Name the exact blocker or mistake." maxlength="120"></textarea>
+          <label for="reflection-friction">2. What created friction or slowed execution?</label>
+          <textarea id="reflection-friction" placeholder="Name the bottleneck, distraction, or miss." maxlength="120"></textarea>
         </div>
         <div class="field">
-          <label for="reflection-next">3. What is the one concrete action that will move the objective forward next week?</label>
-          <textarea id="reflection-next" placeholder="Define one specific action (clear and executable)." maxlength="120"></textarea>
+          <label for="reflection-next">3. What is the 1 highest-leverage priority next week?</label>
+          <textarea id="reflection-next" placeholder="Define the single move that matters most next." maxlength="120"></textarea>
         </div>
         <div class="actions"><button class="gold-btn" onclick="saveReflection()">Lock weekly review</button></div>
         <div class="log-list" id="daily-log-list"><div class="empty">No weekly review yet.</div></div>
@@ -631,9 +632,9 @@ async function saveReflection(){
     saveReflectionLog(log);
   }
 
-  winField.value="";
-  frictionField.value="";
-  nextField.value="";
+  winField.value=winText;
+  frictionField.value=frictionText;
+  nextField.value=nextText;
 renderDailyLog();
 }
 function loadReflection(){

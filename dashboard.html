@@ -32,6 +32,7 @@ a{color:inherit;text-decoration:none}.shell{width:min(100% - 32px,1320px);margin
 .progress-card{height:100%;padding:24px;display:flex;flex-direction:column;justify-content:flex-start;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015)),rgba(12,18,26,.72);border:1px solid var(--lineStrong);border-radius:24px}
 .progress-title{font-size:14px;text-transform:uppercase;letter-spacing:.14em;color:var(--gold2);margin-bottom:14px;font-weight:800}
 .progress-topline{color:#dfe8f4;font-size:15px;line-height:1.5;margin:0 0 18px;max-width:420px}
+.progress-focus{color:#e8eef8;font-size:15px;margin-top:6px;margin-bottom:12px;font-weight:600;opacity:.9}
 .progress-core{display:flex;align-items:center;gap:22px;margin-bottom:18px}
 .ring{width:142px;height:142px;border-radius:50%;background:conic-gradient(var(--gold) 0deg,rgba(255,255,255,.08) 0deg);display:grid;place-items:center;position:relative;flex:0 0 auto}
 .ring::before{content:"";position:absolute;inset:14px;border-radius:50%;background:linear-gradient(180deg,rgba(8,12,18,.95),rgba(11,16,23,.98));border:1px solid rgba(255,255,255,.07)}
@@ -104,6 +105,7 @@ textarea{min-height:92px;resize:vertical} input::placeholder,textarea::placehold
       <div class="progress-card">
         <div class="progress-title">Execution progress</div>
         <div class="progress-topline" id="progress-topline">Execution is active. This week is the only scope.</div>
+        <div class="progress-focus">Focus on the 3 priorities. Nothing else counts.</div>
         <div class="progress-core">
           <div class="ring" id="progress-ring"><div class="ring-center"><div class="ring-day" id="ring-day">1</div><div class="ring-sub">Day of 90</div></div></div>
           <div>

@@ -58,6 +58,7 @@ a{color:inherit;text-decoration:none}.shell{width:min(100% - 32px,1320px);margin
   .top-actions{width:100%;display:grid;grid-template-columns:1fr;gap:8px}
   .ghost-btn,.gold-btn,.danger-btn{width:100%;min-height:44px}
   .hero{grid-template-columns:1fr;padding:18px;gap:16px}
+  .hero-left,.hero-right,.progress-card,.card,.pillar-card,.bottom-grid>*{min-width:0}
   .hero h1{font-size:clamp(32px,10vw,44px);line-height:1.02;max-width:none}
   .hero-copy{font-size:15px;line-height:1.45;margin-bottom:18px}
   .lock-row{gap:8px}
@@ -78,18 +79,22 @@ a{color:inherit;text-decoration:none}.shell{width:min(100% - 32px,1320px);margin
   .pillar-framework{font-size:15px}
   .pillar-detail{white-space:normal;text-overflow:clip}
   .bottom-grid{grid-template-columns:1fr;gap:14px}
-  .card{padding:18px}
-  .card h2{font-size:22px}
-  .sub{font-size:15px;margin-bottom:14px}
-  input,textarea{min-height:52px;padding:14px 16px}
+  .card{padding:18px;overflow:hidden}
+  .card h2{font-size:22px;overflow-wrap:anywhere}
+  .sub,label,.small,#momentum-text,#score-breakdown,.log-text{overflow-wrap:anywhere;word-break:break-word}
+  input,textarea{min-height:52px;padding:14px 16px;max-width:100%}
   textarea{min-height:88px}
   .actions{gap:8px}
   .actions .gold-btn,.actions .ghost-btn,.actions .danger-btn{width:100%}
-  .task{grid-template-columns:24px 1fr auto;gap:10px;padding:12px}
-  .task-text{font-size:14px;line-height:1.4}
-  .task-delete{font-size:18px}
-  .momentum-score{font-size:42px;margin:8px 0 14px}
+  .task{grid-template-columns:24px minmax(0,1fr) 20px;gap:10px;padding:12px}
+  .check{margin-top:1px}
+  .task-text{font-size:14px;line-height:1.4;min-width:0}
+  .task-delete{font-size:18px;width:20px;padding:0;justify-self:end}
+  .momentum-score{font-size:38px;margin:8px 0 14px;overflow-wrap:anywhere}
+  .momentum-bar{margin-bottom:14px}
+  .reflection-box{margin-top:16px;padding-top:16px}
   .log-item{padding:12px 14px}
+  .log-section-title{display:block}
 }
 
 .pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:22px}
@@ -114,6 +119,55 @@ textarea{min-height:92px;resize:vertical} input::placeholder,textarea::placehold
 #momentum-text{font-size:16px;color:#e8eef8;font-weight:600}
 .log-list{display:grid;gap:10px;margin-top:16px}.log-item{padding:14px 16px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.10)}
 .log-date{font-size:11px;color:var(--gold2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:800}.log-text{font-size:15px;color:#eef4fb;line-height:1.55;white-space:pre-line;overflow-wrap:anywhere;word-break:break-word}.log-section-title{display:block;color:#f0d29a;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:10px 0 4px}
+
+
+@media (max-width: 768px){
+  .shell{width:min(100% - 20px,1320px);padding:16px 0 32px}
+  .topbar{align-items:flex-start;flex-direction:column;gap:12px;margin-bottom:16px}
+  .brand-name{font-size:24px}
+  .top-actions{width:100%;display:grid;grid-template-columns:1fr;gap:8px}
+  .ghost-btn,.gold-btn,.danger-btn{width:100%;min-height:44px}
+  .hero{grid-template-columns:1fr;padding:18px;gap:16px}
+  .hero-left,.hero-right,.progress-card,.card,.pillar-card,.bottom-grid>*{min-width:0}
+  .hero h1{font-size:clamp(32px,10vw,44px);line-height:1.02;max-width:none}
+  .hero-copy{font-size:15px;line-height:1.45;margin-bottom:18px}
+  .lock-row{gap:8px}
+  .lock-badge{min-height:40px;padding:0 14px;font-size:11px;letter-spacing:.08em}
+  .lock-card{margin-top:14px;padding:16px}
+  .lock-head{align-items:flex-start;flex-direction:column}
+  .progress-card{padding:18px}
+  .progress-topline,.progress-copy,.progress-rule-text{font-size:14px}
+  .progress-core{gap:14px}
+  .ring{width:112px;height:112px}
+  .ring::before{inset:12px}
+  .ring-day{font-size:32px}
+  .ring-sub{font-size:12px}
+  .progress-meta{grid-template-columns:1fr;gap:8px}
+  .pillars-grid{grid-template-columns:1fr;gap:14px}
+  .pillar-card{padding:18px;min-height:auto}
+  .pillar-name{font-size:22px}
+  .pillar-framework{font-size:15px}
+  .pillar-detail{white-space:normal;text-overflow:clip;overflow-wrap:anywhere;word-break:break-word}
+  .pillar-foot{overflow-wrap:anywhere;word-break:break-word}
+  .bottom-grid{grid-template-columns:1fr;gap:14px}
+  .card{padding:18px;overflow:hidden}
+  .card h2{font-size:22px;overflow-wrap:anywhere}
+  .sub,label,.small,#momentum-text,#score-breakdown,.log-text{overflow-wrap:anywhere;word-break:break-word}
+  input,textarea{min-height:52px;padding:14px 16px;max-width:100%}
+  textarea{min-height:88px}
+  .actions{gap:8px}
+  .actions .gold-btn,.actions .ghost-btn,.actions .danger-btn{width:100%}
+  .task{grid-template-columns:24px minmax(0,1fr) 20px;gap:10px;padding:12px}
+  .check{margin-top:1px}
+  .task-text{font-size:14px;line-height:1.4;min-width:0}
+  .task-delete{font-size:18px;width:20px;padding:0;justify-self:end}
+  .momentum-score{font-size:38px;margin:8px 0 14px;overflow-wrap:anywhere}
+  .momentum-bar{margin-bottom:14px}
+  .reflection-box{margin-top:16px;padding-top:16px}
+  .log-item{padding:12px 14px}
+  .log-section-title{display:block}
+}
+
 </style>
 </head>
 <body>

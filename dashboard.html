@@ -67,6 +67,7 @@ textarea{min-height:92px;resize:vertical} input::placeholder,textarea::placehold
 .momentum-score{font-size:54px;font-weight:900;line-height:1;letter-spacing:-.04em;margin:10px 0 18px}.momentum-bar{height:14px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.06);overflow:hidden;margin-bottom:18px}
 .momentum-bar>div{height:100%;width:0%;background:linear-gradient(90deg,var(--gold2),var(--gold))}
 .reflection-box{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}.small{font-size:14px;color:var(--muted)}
+#momentum-text{font-size:16px;color:#e8eef8;font-weight:600}
 .log-list{display:grid;gap:10px;margin-top:16px}.log-item{padding:14px 16px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.10)}
 .log-date{font-size:11px;color:var(--gold2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:800}.log-text{font-size:15px;color:#eef4fb;line-height:1.55;white-space:pre-line;overflow-wrap:anywhere;word-break:break-word}.log-section-title{display:block;color:#f0d29a;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:10px 0 4px}
 </style>
@@ -427,10 +428,10 @@ function renderMomentum(){
   const done=loadTasks().filter(t=>t.done).length, total=Math.min(3,done);
   renderText("momentum-score", total+" / 3");
   document.getElementById("momentum-fill").style.width=(total/3)*100+"%";
-  let text="No priorities completed yet. Start with one concrete move.";
-  if(total===1) text="Good. First priority completed.";
-  if(total===2) text="Strong progress. One more to close the week.";
-  if(total===3) text="All priorities completed. Week executed.";
+  let text="Nothing completed yet. Define the first real move.";
+  if(total===1) text="Good start. Stay inside the execution.";
+  if(total===2) text="Strong progress. Close the execution.";
+  if(total===3) text="Execution complete. Review and reset.";
   renderText("momentum-text", text);
   }
 function escapeHtml(str){return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");}

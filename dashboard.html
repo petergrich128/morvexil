@@ -184,7 +184,7 @@ textarea{min-height:92px;resize:vertical} input::placeholder,textarea::placehold
   <section class="panel hero">
     <div class="hero-left">
       <div class="eyebrow">Morvexil System</div>
-      <h1 id="hero-objective">Stay inside the objective</h1>
+      <h1 id="hero-objective" style="visibility:hidden;">Stay inside the objective</h1>
       <div class="hero-copy">One objective. Fixed structure. Controlled execution. Morvexil removes drift so the right work gets finished.</div>
       <div class="lock-row">
         <div class="lock-badge"><span class="lock-dot"></span> Objective locked</div>
@@ -238,21 +238,21 @@ textarea{min-height:92px;resize:vertical} input::placeholder,textarea::placehold
       <div class="pillar-top"><div class="pillar-num">1</div></div>
       <div class="pillar-name">Product</div>
       <div class="pillar-framework">Build the core asset that makes this objective real.</div>
-      <div class="pillar-detail" id="product-detail">Define what you are building.</div>
+      <div class="pillar-detail" id="product-detail" style="visibility:hidden;">Define what you are building.</div>
       <div class="pillar-foot">Locked to the current 90-day execution</div>
     </article>
     <article class="panel pillar-card">
       <div class="pillar-top"><div class="pillar-num">2</div></div>
       <div class="pillar-name">Distribution</div>
       <div class="pillar-framework">Create consistent reach so the right people repeatedly see the work.</div>
-      <div class="pillar-detail" id="distribution-detail">Define how people will see your work.</div>
+      <div class="pillar-detail" id="distribution-detail" style="visibility:hidden;">Define how people will see your work.</div>
       <div class="pillar-foot">Locked to the current 90-day execution</div>
     </article>
     <article class="panel pillar-card">
       <div class="pillar-top"><div class="pillar-num">3</div></div>
       <div class="pillar-name">Sales</div>
       <div class="pillar-framework">Convert attention into revenue through direct asks, offers, and follow-up.</div>
-      <div class="pillar-detail" id="sales-detail">Define how you convert attention into revenue.</div>
+      <div class="pillar-detail" id="sales-detail" style="visibility:hidden;">Define how you convert attention into revenue.</div>
       <div class="pillar-foot">Locked to the current 90-day execution</div>
     </article>
   </section>
@@ -331,7 +331,7 @@ function saveState(state){
   localStorage.setItem(stateKey,JSON.stringify(safeState));
   return safeState;
 }
-function renderText(id,text){const el=document.getElementById(id); if(el) el.textContent=text||"";}
+function renderText(id,text){const el=document.getElementById(id); if(el){ el.textContent=text||""; el.style.visibility="visible"; }}
 function loadState(){
   try{
     const raw = localStorage.getItem(stateKey);
